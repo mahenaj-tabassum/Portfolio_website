@@ -6,7 +6,7 @@ The website focuses on clean UI, responsive layouts, smooth interactions, and a 
 
 ## 🌐 Live Website
 
-**Live Demo:** [Add your deployed website URL here]
+**Live Demo:** [Visit Portfolio Website](https://portfolio-web-0-1.netlify.app/)
 
 ## 👩‍💻 About
 
