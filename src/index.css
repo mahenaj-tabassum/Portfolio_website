@@ -1,111 +1,522 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap");
+
+@import "tailwindcss";
+
+/* =========================
+   Theme Variables
+========================= */
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --bg: #06070d;
+  --bg-soft: #0a0c16;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --surface: rgba(255, 255, 255, 0.045);
+  --surface-strong: rgba(255, 255, 255, 0.07);
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
+  --border: rgba(255, 255, 255, 0.09);
+
+  --text: #e9ecf5;
+  --text-muted: #8b93ac;
+
+  --primary: #3355f4;
+  --primary-soft: #0e1a52;
+
+  --secondary: #8b5cf6;
+  --accent: #38bdf8;
+}
+
+/* =========================
+   Light Theme
+========================= */
+
+html[data-theme="light"] {
+  --bg: #f5f6fb;
+  --bg-soft: #ffffff;
+
+  --surface: rgba(10, 14, 30, 0.035);
+  --surface-strong: rgba(10, 14, 30, 0.06);
+
+  --border: rgba(10, 14, 30, 0.09);
+
+  --text: #0d1120;
+  --text-muted: #5b6377;
+
+  --primary: #2643e8;
+  --primary-soft: #dfe5ff;
+
+  --secondary: #7c3aed;
+  --accent: #0891b2;
+}
+
+/* =========================
+   Base
+========================= */
+
+* {
+  scroll-behavior: smooth;
+}
+
+html {
   background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  background: var(--bg);
+  color: var(--text);
+
+  font-family: "Inter", sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+
+  overflow-x: hidden;
 }
 
 h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+h2,
+h3,
+h4,
+.font-display {
+  font-family: "Space Grotesk", sans-serif;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+::selection {
+  background: var(--accent);
+  color: #06070d;
+}
+
+/* =========================
+   Reduced Motion
+========================= */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
   }
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+
+/* =========================
+   Scrollbar
+========================= */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+/* =========================
+   Container
+========================= */
+
+.container-px {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .container-px {
+    padding-left: 4rem;
+    padding-right: 4rem;
   }
 }
-p {
-  margin: 0;
+
+/* =========================
+   Glass Effect
+========================= */
+
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
+
+.glass-strong {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* =========================
+   Gradient Text
+========================= */
+
+.grad-text {
+  background: linear-gradient(
+    100deg,
+    var(--accent),
+    var(--primary) 55%,
+    var(--secondary)
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  color: transparent;
+}
+
+/* =========================
+   Gradient Border
+========================= */
+
+.grad-border {
+  position: relative;
+  border-radius: 1.1rem;
+}
+
+.grad-border::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  border-radius: inherit;
+  padding: 1px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(56, 189, 248, 0.55),
+    rgba(51, 85, 244, 0.15) 40%,
+    rgba(139, 92, 246, 0.5)
+  );
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+}
+
+/* =========================
+   Buttons
+========================= */
+
+.btn-primary {
+  background: linear-gradient(100deg, var(--primary), var(--secondary));
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+/* =========================
+   Navbar Links
+========================= */
+
+.navlink {
+  position: relative;
+}
+
+.navlink::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+
+  height: 2px;
+  border-radius: 2px;
+
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+
+  transform: scaleX(0);
+  transform-origin: left;
+
+  transition: transform 0.25s ease;
+}
+
+.navlink.active::after,
+.navlink:hover::after {
+  transform: scaleX(1);
+}
+
+.navlink.active {
+  color: var(--text);
+}
+/* =========================
+   Scroll Reveal
+========================= */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* =========================
+   Hover Lift
+========================= */
+
+.lift {
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.lift:hover {
+  transform: translateY(-5px);
+
+  border-color: rgba(56, 189, 248, 0.35);
+
+  box-shadow: 0 18px 40px -20px rgba(51, 85, 244, 0.45);
+}
+
+/* =========================
+   Image Zoom
+========================= */
+
+.zoom-wrap {
+  overflow: hidden;
+}
+
+.zoom-wrap img,
+.zoom-wrap .zoom-target {
+  transition: transform 0.5s ease;
+}
+
+.zoom-wrap:hover img,
+.zoom-wrap:hover .zoom-target {
+  transform: scale(1.06);
+}
+
+/* =========================
+   Ripple
+========================= */
+
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple span.rp {
+  position: absolute;
+
+  border-radius: 9999px;
+
+  background: rgba(255, 255, 255, 0.35);
+
+  transform: scale(0);
+
+  animation: rip 0.6s ease-out forwards;
+
+  pointer-events: none;
+}
+
+@keyframes rip {
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+/* =========================
+   Floating Background Shapes
+========================= */
+
+@keyframes float1 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(18px, -24px);
+  }
+}
+
+@keyframes float2 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(-22px, 20px);
+  }
+}
+
+.float-a {
+  animation: float1 9s ease-in-out infinite;
+}
+
+.float-b {
+  animation: float2 11s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-a,
+  .float-b {
+    animation: none;
+  }
+}
+
+/* =========================
+   Custom Cursor
+========================= */
+
+.cursor-dot {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 18px;
+  height: 18px;
+
+  border-radius: 50%;
+
+  border: 1.5px solid var(--accent);
+
+  pointer-events: none;
+
+  z-index: 9999;
+
+  transform: translate(-50%, -50%);
+
+  opacity: 0;
+
+  transition:
+    width 0.18s ease,
+    height 0.18s ease,
+    background 0.18s ease,
+    opacity 0.3s ease;
+}
+
+.cursor-dot.show {
+  opacity: 1;
+}
+
+.cursor-dot.big {
+  width: 38px;
+  height: 38px;
+
+  background: rgba(56, 189, 248, 0.12);
+}
+
+/* Don't show custom cursor on touch devices */
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-dot {
+    display: none;
+  }
+}
+
+/* =========================
+   Page Progress Bar
+========================= */
+
+#progress {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  height: 3px;
+  width: 0%;
+
+  z-index: 60;
+
+  background: linear-gradient(
+    90deg,
+    var(--accent),
+    var(--primary),
+    var(--secondary)
+  );
+}
+
+/* =========================
+   Details / FAQ
+========================= */
+
+details[open] .chev {
+  transform: rotate(180deg);
+}
+
+.chev {
+  transition: transform 0.25s ease;
+}
+
+summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* =========================
+   Process Timeline
+========================= */
+
+.proc-line {
+  position: relative;
+}
+
+.proc-line .fill {
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  height: 100%;
+  width: 0%;
+
+  background: linear-gradient(90deg, var(--accent), var(--secondary));
+
+  transition: width 1.4s ease;
+}
+
+/* =========================
+   Accessibility
+========================= */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* =========================
+   Code / Monospace
+========================= */
 
 code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.mono {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
 }
