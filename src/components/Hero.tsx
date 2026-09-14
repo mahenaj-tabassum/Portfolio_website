@@ -102,7 +102,7 @@ const Hero = () => {
           <div className="relative">
             {/* React Floating Badge */}
             <div
-              className="absolute -top-6 -right-4 hidden sm:flex items-center gap-2 glass rounded-full px-3 py-2 text-xs float-b"
+              className="absolute -top-6 -right-4 z-0 hidden sm:flex items-center gap-2 glass rounded-full px-3 py-2 text-xs float-b"
               style={{ color: "var(--text-muted)" }}
             >
               <SiReact className="w-4 h-4 text-[#61DAFB]" />
@@ -119,7 +119,7 @@ const Hero = () => {
             </div>
 
             {/* Code Window */}
-            <div className="grad-border glass-strong rounded-[1.1rem] p-5 sm:p-6 shadow-2xl">
+            <div className="relative z-10 grad-border glass-strong rounded-[1.1rem] p-5 sm:p-6 shadow-2xl">
               {/* Window Header */}
               <div className="flex items-center gap-1.5 mb-4">
                 <span

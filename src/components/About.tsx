@@ -69,7 +69,7 @@ const About = () => {
               className="mt-6 space-y-4 max-w-xl text-[15px] sm:text-base leading-relaxed"
               style={{ color: "var(--text-muted)" }}
             >
-              <p>Hi, I'm Mahenaj Tabassum.</p>
+              <p>Hi, I'm Mahenaj Tabassum Powhi.</p>
 
               <p>
                 I'm a frontend developer from Bangladesh who enjoys turning
