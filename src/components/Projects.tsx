@@ -9,6 +9,7 @@ type Project = {
   codeUrl: string;
 };
 
+
 const projects: Project[] = [
   {
     title: "Personal business website",
