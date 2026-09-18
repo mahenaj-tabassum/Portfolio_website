@@ -14,10 +14,12 @@ import BuildingInPublic from "./components/Building";
 import FAQ from "./components/FAQ";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
     <>
+      <ToastContainer position="top-right" />
       <BackgroundEffects />
       <ProgressBar />
       <CustomCursor />

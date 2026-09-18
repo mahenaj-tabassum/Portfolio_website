@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Globe, Mail, MapPin, Send } from "lucide-react";
 import { FaLinkedinIn } from "react-icons/fa";
-
 import Reveal from "./stylesComponent/Reveal";
 import { toast } from "react-toastify";
 
@@ -14,6 +13,7 @@ const Contact = () => {
   });
 
   const [formNote, setFormNote] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -26,21 +26,58 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setFormNote(
-      "Thanks for reaching out! I'll get back to you as soon as possible.",
-    );
-    toast.success(
-      "Thanks for reaching out! I'll get back to you as soon as possible.",
-    );
-    setFormData({
-      name: "",
-      email: "",
-      project: "",
-      message: "",
-    });
+    setIsSending(true);
+    setFormNote("");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: import.meta.env.VITE_WEB3FORMS_KEY,
+          name: formData.name,
+          email: formData.email,
+          project: formData.project,
+          message: formData.message,
+          subject: `💼 New Client Inquiry from ${formData.name}`,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || "Failed to send message");
+      }
+
+      setFormNote(
+        "Thanks for reaching out! I'll get back to you as soon as possible.",
+      );
+
+      toast.success("Message sent successfully! 🎉");
+
+      setFormData({
+        name: "",
+        email: "",
+        project: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Form submission error:", error);
+
+      setFormNote(
+        "Something went wrong. Please try again or email me directly.",
+      );
+
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -103,7 +140,7 @@ const Contact = () => {
               </a>
 
               <a
-                href="mailto:hello@mahenajtabassum.dev"
+                href="mailto:mahenaj.dev@gmail.com"
                 aria-label="Email"
                 className="
                   w-11 h-11
@@ -129,7 +166,6 @@ const Contact = () => {
         <Reveal delay="0.1s">
           <form
             onSubmit={handleSubmit}
-            noValidate
             className="
               rounded-[1.4rem]
               p-7 sm:p-9
@@ -279,8 +315,11 @@ const Contact = () => {
             {/* Submit */}
             <button
               type="submit"
+              disabled={isSending}
               className="
                 cursor-pointer
+                disabled:cursor-not-allowed
+                disabled:opacity-60
                 mt-6
                 w-full sm:w-auto
                 bg-[var(--primary)]
@@ -297,7 +336,8 @@ const Contact = () => {
                 transition
               "
             >
-              Send message
+              {isSending ? "Sending..." : "Send message"}
+
               <Send className="w-4 h-4" />
             </button>
 

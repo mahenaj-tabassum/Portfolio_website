@@ -1,4 +1,4 @@
-import { ArrowUpRight, Code2 } from "lucide-react";
+import { ArrowUpRight} from "lucide-react";
 import gymImg from "../assets/img1.png";
 import resImg from "../assets/img2.png";
 import travelImg from "../assets/img3.png";
