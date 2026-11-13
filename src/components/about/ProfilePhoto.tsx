@@ -22,8 +22,6 @@ const Placeholder = () => (
     className="animate-float relative w-2/3 overflow-visible"
     aria-hidden="true"
   >
-
-
     {/* Body */}
     <path
       className="ph-body"
@@ -92,12 +90,32 @@ const ProfilePhoto = () => {
               />
 
               {PROFILE_SRC ? (
-                <img
-                  src={PROFILE_SRC}
-                  alt="Mahenaj Tabassum Powshi"
-                  draggable={false}
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                <>
+                  <img
+                    src={PROFILE_SRC}
+                    alt="Mahenaj Tabassum Powshi"
+                    draggable={false}
+                    className="absolute inset-0 h-full w-full object-cover object-[50%_20%] contrast-[1.05] saturate-[0.9]"
+                  />
+
+                  {/* Theme tint: sky -> violet, blended softly into the photo */}
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 bg-linear-to-br from-sky-500/25 via-transparent to-violet-500/30 mix-blend-soft-light"
+                  />
+
+                  {/* Bottom fade into the page background */}
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-[var(--bg)]/60 to-transparent"
+                  />
+
+                  {/* Thin inner edge */}
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-inset ring-white/10"
+                  />
+                </>
               ) : (
                 <Placeholder />
               )}
