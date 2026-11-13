@@ -1,8 +1,49 @@
-import { useState, type FormEvent } from "react";
-import { Globe, Mail, MapPin, Send } from "lucide-react";
-import { FaLinkedinIn } from "react-icons/fa";
-import Reveal from "./stylesComponent/Reveal";
+import { useState } from "react";
+import type { ChangeEvent, FormEvent, ReactNode } from "react";
+import { ArrowUpRight, Clock, Mail, MapPin, Phone, Send } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "react-toastify";
+import Reveal from "./stylesComponent/Reveal";
+import { CONTACT, phoneHref, whatsappHref } from "../data/contact";
+
+type ContactItem = {
+  label: string;
+  value: string;
+  href?: string;
+  icon: ReactNode;
+  external?: boolean;
+};
+
+// খালি তথ্য (যেমন WhatsApp না দিলে) তালিকা থেকে বাদ পড়ে
+const ITEMS: ContactItem[] = [
+  {
+    label: "Email",
+    value: CONTACT.email,
+    href: `mailto:${CONTACT.email}`,
+    icon: <Mail size={18} />,
+  },
+  CONTACT.phone && {
+    label: "Phone",
+    value: CONTACT.phone,
+    href: phoneHref(CONTACT.phone),
+    icon: <Phone size={18} />,
+  },
+  CONTACT.whatsapp && {
+    label: "WhatsApp",
+    value: `+${CONTACT.whatsapp.replace(/\D/g, "")}`,
+    href: whatsappHref(CONTACT.whatsapp),
+    icon: <FaWhatsapp size={18} />,
+    external: true,
+  },
+  {
+    label: "Location",
+    value: CONTACT.location,
+    icon: <MapPin size={18} />,
+  },
+].filter(Boolean) as ContactItem[];
+
+const fieldClass =
+  "w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm outline-none transition focus:border-sky-400/60";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -11,24 +52,18 @@ const Contact = () => {
     project: "",
     message: "",
   });
-
   const [formNote, setFormNote] = useState("");
   const [isSending, setIsSending] = useState(false);
 
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = event.target;
-
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
+    setFormData((previous) => ({ ...previous, [name]: value }));
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     setIsSending(true);
     setFormNote("");
 
@@ -45,12 +80,11 @@ const Contact = () => {
           email: formData.email,
           project: formData.project,
           message: formData.message,
-          subject: `💼 New Client Inquiry from ${formData.name}`,
+          subject: `New client inquiry from ${formData.name}`,
         }),
       });
 
       const result = await response.json();
-
       if (!result.success) {
         throw new Error(result.message || "Failed to send message");
       }
@@ -58,22 +92,13 @@ const Contact = () => {
       setFormNote(
         "Thanks for reaching out! I'll get back to you as soon as possible.",
       );
-
-      toast.success("Message sent successfully! 🎉");
-
-      setFormData({
-        name: "",
-        email: "",
-        project: "",
-        message: "",
-      });
+      toast.success("Message sent successfully!");
+      setFormData({ name: "", email: "", project: "", message: "" });
     } catch (error) {
       console.error("Form submission error:", error);
-
       setFormNote(
         "Something went wrong. Please try again or email me directly.",
       );
-
       toast.error("Failed to send message. Please try again.");
     } finally {
       setIsSending(false);
@@ -81,110 +106,106 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-24 lg:py-32 border-t">
-      <div className="container-px grid lg:grid-cols-[1fr_1.2fr] gap-14">
-        {/* Contact information */}
+    <section id="contact" className="border-t py-24 lg:py-32">
+      <div className="container-px grid gap-14 lg:grid-cols-[1fr_1.2fr]">
+        {/* ===== Contact information ===== */}
         <Reveal>
           <div>
             <h2
-              className="font-display font-semibold text-3xl sm:text-4xl"
+              className="font-display text-3xl font-semibold sm:text-4xl"
               style={{ color: "var(--text)" }}
             >
               Let's build something great
             </h2>
 
             <p className="mt-4 max-w-sm" style={{ color: "var(--text-muted)" }}>
-              Tell me a bit about your project and I'll get back to you.
+              Have a project in mind? Reach out directly or send a message with
+              the form, and I'll get back to you.
             </p>
 
-            <div
-              className="mt-8 space-y-3 text-sm"
+            <ul className="mt-8 space-y-3">
+              {ITEMS.map(({ label, value, href, icon, external }) => {
+                const inner = (
+                  <>
+                    <span
+                      className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface-strong)]"
+                      style={{ color: "var(--accent)" }}
+                    >
+                      {icon}
+                    </span>
+
+                    <span className="min-w-0 flex-1">
+                      <span
+                        className="block text-xs"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        {label}
+                      </span>
+                      <span
+                        className="block truncate text-sm font-medium"
+                        style={{ color: "var(--text)" }}
+                      >
+                        {value}
+                      </span>
+                    </span>
+
+                    {href && (
+                      <ArrowUpRight
+                        size={16}
+                        className="shrink-0 transition duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                        style={{ color: "var(--text-muted)" }}
+                      />
+                    )}
+                  </>
+                );
+
+                const cardClass =
+                  "group glass flex items-center gap-4 rounded-2xl p-4";
+
+                return (
+                  <li key={label}>
+                    {href ? (
+                      <a
+                        href={href}
+                        target={external ? "_blank" : undefined}
+                        rel={external ? "noopener noreferrer" : undefined}
+                        className={`${cardClass} lift`}
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <div className={cardClass}>{inner}</div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+
+            <p
+              className="mt-6 flex items-center gap-2 text-xs"
               style={{ color: "var(--text-muted)" }}
             >
-              <div className="flex items-center gap-2.5">
-                <MapPin
-                  className="w-4 h-4"
-                  style={{ color: "var(--accent)" }}
-                />
-                Bangladesh
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                <Globe className="w-4 h-4" style={{ color: "var(--accent)" }} />
-                Remote, worldwide
-              </div>
-            </div>
-
-            {/* Social links */}
-            <div className="mt-8 flex items-center gap-3">
-              <a
-                href="https://linkedin.com/in/mahenaj-tabassum"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="
-                  w-11 h-11
-                  grid place-items-center
-                  rounded-full
-                  bg-white/5
-                  backdrop-blur-md
-                  border border-white/10
-                  hover:bg-white/10
-                  transition
-                "
-              >
-                <FaLinkedinIn
-                  className="w-[18px] h-[18px]"
-                  style={{ color: "var(--text)" }}
-                />
-              </a>
-
-              <a
-                href="mailto:mahenaj.dev@gmail.com"
-                aria-label="Email"
-                className="
-                  w-11 h-11
-                  grid place-items-center
-                  rounded-full
-                  bg-white/5
-                  backdrop-blur-md
-                  border border-white/10
-                  hover:bg-white/10
-                  transition
-                "
-              >
-                <Mail
-                  className="w-[18px] h-[18px]"
-                  style={{ color: "var(--text)" }}
-                />
-              </a>
-            </div>
+              <Clock size={14} style={{ color: "var(--accent)" }} />
+              Usually replies within 24 hours · Remote, worldwide
+            </p>
           </div>
         </Reveal>
 
-        {/* Contact form */}
+        {/* ===== Contact form ===== */}
         <Reveal delay="0.1s">
           <form
             onSubmit={handleSubmit}
-            className="
-              rounded-[1.4rem]
-              p-7 sm:p-9
-              bg-white/5
-              backdrop-blur-xl
-              border border-white/10
-            "
+            className="glass-strong rounded-[1.4rem] p-7 sm:p-9"
           >
-            <div className="grid sm:grid-cols-2 gap-5">
-              {/* Name */}
+            <div className="grid gap-5 sm:grid-cols-2">
               <div>
                 <label
                   htmlFor="name"
-                  className="block text-xs mb-2"
+                  className="mb-2 block text-xs"
                   style={{ color: "var(--text-muted)" }}
                 >
                   Name
                 </label>
-
                 <input
                   id="name"
                   name="name"
@@ -192,33 +213,20 @@ const Contact = () => {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="
-                    w-full
-                    rounded-xl
-                    px-4 py-3
-                    text-sm
-                    bg-white/5
-                    backdrop-blur-md
-                    border border-white/10
-                    outline-none
-                    focus:border-sky-400/50
-                    transition
-                  "
+                  className={fieldClass}
                   style={{ color: "var(--text)" }}
                   placeholder="Your name"
                 />
               </div>
 
-              {/* Email */}
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-xs mb-2"
+                  className="mb-2 block text-xs"
                   style={{ color: "var(--text-muted)" }}
                 >
                   Email
                 </label>
-
                 <input
                   id="email"
                   name="email"
@@ -226,66 +234,40 @@ const Contact = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="
-                    w-full
-                    rounded-xl
-                    px-4 py-3
-                    text-sm
-                    bg-white/5
-                    backdrop-blur-md
-                    border border-white/10
-                    outline-none
-                    focus:border-sky-400/50
-                    transition
-                  "
+                  className={fieldClass}
                   style={{ color: "var(--text)" }}
                   placeholder="you@email.com"
                 />
               </div>
 
-              {/* Project */}
               <div className="sm:col-span-2">
                 <label
                   htmlFor="project"
-                  className="block text-xs mb-2"
+                  className="mb-2 block text-xs"
                   style={{ color: "var(--text-muted)" }}
                 >
                   Project
                 </label>
-
                 <input
                   id="project"
                   name="project"
                   type="text"
                   value={formData.project}
                   onChange={handleChange}
-                  className="
-                    w-full
-                    rounded-xl
-                    px-4 py-3
-                    text-sm
-                    bg-white/5
-                    backdrop-blur-md
-                    border border-white/10
-                    outline-none
-                    focus:border-sky-400/50
-                    transition
-                  "
+                  className={fieldClass}
                   style={{ color: "var(--text)" }}
                   placeholder="e.g. Landing page for a startup"
                 />
               </div>
 
-              {/* Message */}
               <div className="sm:col-span-2">
                 <label
                   htmlFor="message"
-                  className="block text-xs mb-2"
+                  className="mb-2 block text-xs"
                   style={{ color: "var(--text-muted)" }}
                 >
                   Message
                 </label>
-
                 <textarea
                   id="message"
                   name="message"
@@ -293,57 +275,24 @@ const Contact = () => {
                   required
                   value={formData.message}
                   onChange={handleChange}
-                  className="
-                    w-full
-                    rounded-xl
-                    px-4 py-3
-                    text-sm
-                    bg-white/5
-                    backdrop-blur-md
-                    border border-white/10
-                    outline-none
-                    resize-none
-                    focus:border-sky-400/50
-                    transition
-                  "
+                  className={`${fieldClass} resize-none`}
                   style={{ color: "var(--text)" }}
                   placeholder="Tell me a bit about what you need..."
                 />
               </div>
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isSending}
-              className="
-                cursor-pointer
-                disabled:cursor-not-allowed
-                disabled:opacity-60
-                mt-6
-                w-full sm:w-auto
-                bg-[var(--primary)]
-                hover:brightness-110
-                text-white
-                text-sm
-                font-medium
-                px-7 py-3.5
-                rounded-full
-                inline-flex
-                items-center
-                justify-center
-                gap-2
-                transition
-              "
+              className="mt-6 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-linear-to-r from-sky-500 to-violet-500 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
               {isSending ? "Sending..." : "Send message"}
-
-              <Send className="w-4 h-4" />
+              <Send className="h-4 w-4" />
             </button>
 
-            {/* Form message */}
             <p
-              className="mt-3 text-xs text-center"
+              className="mt-3 text-center text-xs"
               style={{ color: "var(--text-muted)" }}
               aria-live="polite"
             >

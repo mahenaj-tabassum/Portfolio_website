@@ -7,6 +7,7 @@ import ScrollManager from "./components/stylesComponent/ScrollManager";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
+import ProjectDetail from "./pages/ProjectDetail";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -30,7 +31,7 @@ function App() {
       <main className="relative z-10" id="main">
         <Routes>
           <Route path="/" element={<Home />} />
-          {/* Step 4: <Route path="/projects/:slug" element={<ProjectDetail />} /> */}
+          <Route path="/projects/:slug" element={<ProjectDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
 

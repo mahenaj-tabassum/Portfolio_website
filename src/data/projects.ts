@@ -21,27 +21,26 @@ export type Project = {
   liveUrl?: string;
   /** Client repository only. The button is hidden when this is missing. */
   githubUrl?: string;
+  /** Server repository (full-stack projects only). */
+  serverUrl?: string;
   challenges: Note[];
   improvements: Note[];
 };
 
-// NOTE: challenges / improvements below are DRAFTS written from each project's
-// nature. Edit them so they describe what you really went through.
-// Items marked TODO still need your real details.
-
 export const PROJECTS: Project[] = [
   {
-    slug: "wanderlust",
-    title: "Wanderlust",
-    type: "Travel destination platform",
+    slug: "handstogether",
+    title: "HandsTogether",
+    type: "Social development events platform",
     category: "Full Stack",
     summary:
-      "A full-stack travel app where people can browse destinations and manage their own, backed by a custom REST API.",
+      "A community platform to discover local social-development events, create your own and join as a volunteer.",
     description:
-      "Wanderlust is a full-stack travel destination app. The Next.js frontend handles browsing, authentication and destination management, and talks to a REST API built with Express and MongoDB. Sign-in is handled with Better Auth, and the API uses JWT to protect private routes.",
+      "HandsTogether is a community platform where people discover local social-development events such as tree plantations, winter clothes distributions, community cleanups, and food and blood donation drives. Users can browse upcoming events with filters and search, create events through a validated form with a live card preview, and join with one click. The server enforces seat limits and prevents double joins, even when two people take the last seat at the same time. Joined events are split into Upcoming and Past tabs, and only the creator can update or delete an event, which is enforced on the server, not just in the interface.",
     techStack: [
       "Next.js",
       "TypeScript",
+      "Tailwind CSS",
       "shadcn/ui",
       "Better Auth",
       "Node.js",
@@ -49,10 +48,67 @@ export const PROJECTS: Project[] = [
       "MongoDB",
       "JWT",
     ],
-    // TODO: add live link
-    // liveUrl: "",
-    // TODO: add GitHub (client) link
-    // githubUrl: "",
+    liveUrl: "https://hands-together-client.vercel.app",
+    githubUrl: "https://github.com/mahenaj-tabassum/HandsTogether-Client",
+    serverUrl: "https://github.com/mahenaj-tabassum/HandsTogether-Server",
+    challenges: [
+      {
+        title: "Never going over capacity",
+        detail:
+          "When two people grab the last seat at the same time, the server must accept only one. The join logic is handled on the server so the seat count stays correct.",
+      },
+      {
+        title: "Enforcing ownership on the server",
+        detail:
+          "Hiding the edit and delete buttons is not enough, so the API checks that the logged-in user is the event's creator before it allows a change.",
+      },
+      {
+        title: "Showing only upcoming events",
+        detail:
+          "Past events must never appear in the public list, and past dates must be rejected on both the client and the server.",
+      },
+    ],
+    improvements: [
+      {
+        title: "Image uploads",
+        detail:
+          "Let creators upload an event thumbnail instead of pasting a URL.",
+      },
+      {
+        title: "Notifications and reminders",
+        detail:
+          "Send an email or in-app reminder before an event the user has joined.",
+      },
+      {
+        title: "Leave an event",
+        detail:
+          "Allow volunteers to cancel their spot so seats open up for others.",
+      },
+    ],
+  },
+
+  {
+    slug: "wanderlust",
+    title: "Wanderlust",
+    type: "Travel booking platform",
+    category: "Full Stack",
+    summary:
+      "A full-stack travel booking app where people browse destinations, book trips and manage their bookings, backed by a custom REST API.",
+    description:
+      "Wanderlust is a full-stack travel booking platform. Travelers can browse and search destinations, filter them by category, view full details and book a trip in one click. A My Booking page splits bookings into upcoming and past, and lets users cancel an upcoming one. Signed-in users can also add, edit and delete destinations, with a live card preview while adding. Sign-in works with email and password, Google or GitHub through Better Auth, and the Express API protects private routes with JWT.",
+    techStack: [
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "shadcn/ui",
+      "Better Auth",
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "JWT",
+    ],
+    liveUrl: "https://wanderlust-client-xi-pi.vercel.app/",
+    githubUrl: "https://github.com/mahenaj-tabassum/Wanderlust",
     challenges: [
       {
         title: "Connecting two authentication layers",
@@ -62,83 +118,52 @@ export const PROJECTS: Project[] = [
       {
         title: "Keeping the frontend and API in sync",
         detail:
-          "Destination data had to stay consistent between the forms, the API and the database, so validation lives on both sides.",
+          "Destination and booking data had to stay consistent between the forms, the API and the database, so validation lives on both sides.",
+      },
+      {
+        title: "Splitting bookings into upcoming and past",
+        detail:
+          "Bookings are separated by date so users can cancel only the upcoming ones, while past trips stay as a read-only history.",
       },
     ],
     improvements: [
+      {
+        title: "Role-based access",
+        detail:
+          "Right now every signed-in user can edit or delete any destination. I would add admin and user roles so only the creator or an admin can manage a destination.",
+      },
       {
         title: "Image uploads",
         detail:
           "Let users upload photos for a destination instead of pasting image links.",
       },
       {
-        title: "Search, filters and pagination",
+        title: "Pagination and reviews",
         detail:
-          "Make it easy to find a place by name, country or type as the list grows.",
-      },
-      {
-        title: "Favourites and reviews",
-        detail:
-          "Let signed-in users save destinations and leave short reviews.",
-      },
-    ],
-  },
-  {
-    slug: "handstogether",
-    title: "HandsTogether",
-    type: "Community web application",
-    category: "Full Stack",
-    // TODO: replace with a real 1-2 line summary of HandsTogether
-    summary:
-      "A community-focused web application built with the MERN stack. (TODO: update this summary)",
-    // TODO: replace with a real description of HandsTogether
-    description:
-      "TODO: describe what HandsTogether does, who it is for, and what you built.",
-    // TODO: confirm the real tech stack
-    techStack: ["React", "Node.js", "Express", "MongoDB"],
-    // TODO: add live link
-    // liveUrl: "",
-    // TODO: add GitHub (client) link
-    // githubUrl: "",
-    challenges: [
-      // TODO: replace with your real challenges
-      {
-        title: "TODO: a real challenge",
-        detail: "What went wrong or was hard, and how you solved it.",
-      },
-      {
-        title: "TODO: another challenge",
-        detail: "What went wrong or was hard, and how you solved it.",
-      },
-    ],
-    improvements: [
-      // TODO: replace with your real plans
-      {
-        title: "TODO: a future improvement",
-        detail: "What you would add or fix next, and why.",
-      },
-      {
-        title: "TODO: another improvement",
-        detail: "What you would add or fix next, and why.",
+          "Add pagination as the list grows, and let travelers leave short reviews after a trip.",
       },
     ],
   },
   {
     slug: "the-daily-brief",
     title: "The Daily Brief",
-    type: "News reader app",
-    category: "Frontend",
+    type: "News portal",
+    category: "Full Stack",
     summary:
-      "A news reading app that pulls live headlines from a third-party API into a clean, responsive layout.",
-    // TODO: confirm this matches what The Daily Brief really does
+      "A news website that groups stories into Bangladesh, World, Health, Video and more, with a clean editorial design.",
     description:
-      "The Daily Brief is a frontend app that fetches headlines from an external API and presents them in a clean, easy-to-scan layout. I built the whole interface and the API integration, including loading and error states.",
-    // TODO: confirm the real tech stack
-    techStack: ["React", "Tailwind CSS", "REST API"],
-    // TODO: add live link
-    // liveUrl: "",
-    // TODO: add GitHub (client) link
-    // githubUrl: "",
+      "The Daily Brief is a news website where readers get the latest stories in one clean place. It has a dynamic homepage with a lead story, featured stories, section-wise news and a ranked most-read list, plus category pages and detailed article pages with headline, byline, date, source, tags and full body. Readers can sign in with email and password, Google or GitHub through Better Auth. Stories are loaded from the BBC Bangla news data source, and the design uses serif headlines, plenty of space and a restrained colour palette.",
+    techStack: [
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Better Auth",
+      "react-toastify",
+      "Vercel",
+    ],
+    liveUrl: "https://news-portal-website-application.vercel.app",
+    githubUrl:
+      "https://github.com/mahenaj-tabassum/News-Portal-Website-Application",
     challenges: [
       {
         title: "Handling unreliable API data",
@@ -148,17 +173,18 @@ export const PROJECTS: Project[] = [
       {
         title: "Loading, empty and error states",
         detail:
-          "Every request can be slow or fail, so each screen shows clear feedback instead of a blank page.",
+          "Every request can be slow or fail, so each screen shows a loading state or a custom not-found page instead of a blank screen.",
       },
     ],
     improvements: [
       {
-        title: "Categories and search",
-        detail: "Let readers filter headlines by topic or search by keyword.",
+        title: "Search",
+        detail: "Let readers search stories by keyword across all categories.",
       },
       {
         title: "Saved articles",
-        detail: "Allow readers to bookmark stories and read them later.",
+        detail:
+          "Allow signed-in readers to bookmark stories and read them later.",
       },
       {
         title: "Response caching",
@@ -168,14 +194,14 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "gym-website",
-    title: "Gym Website",
+    title: "IronForge Gym",
     type: "Fitness website",
     category: "Frontend",
     summary:
-      "A modern fitness website showcasing programs, trainers, membership plans and facilities.",
+      "A bold, premium fitness website with programs, trainers, pricing, a BMI calculator and more.",
     description:
-      "A modern, responsive fitness website designed to showcase gym programs, trainers, membership plans and facilities, with an engaging user experience from the first screen to the sign-up call to action.",
-    techStack: ["React", "Tailwind CSS", "Vercel"],
+      "IronForge is a modern, responsive gym and fitness single page application with a dark UI and an electric-lime accent. It showcases training programs and trainers, and includes a monthly/yearly pricing toggle, a testimonial carousel, an interactive BMI calculator, an FAQ accordion and a contact form with frontend validation. Everything is animated with CSS and Tailwind, including scroll reveal effects, and the layout works across desktop, tablet and mobile.",
+    techStack: ["React", "JavaScript", "Tailwind CSS", "Vite", "Vercel"],
     liveUrl: "https://ironforge-gym-website-eta.vercel.app/",
     githubUrl: "https://github.com/mahenaj-tabassum/Gym_website",
     challenges: [
@@ -187,91 +213,22 @@ export const PROJECTS: Project[] = [
       {
         title: "Animation without slowing the page",
         detail:
-          "I kept interactions smooth by animating only what helps, and avoiding heavy effects.",
+          "I kept interactions smooth by using CSS-based animations and avoiding heavy effects.",
+      },
+      {
+        title: "Building interactive widgets",
+        detail:
+          "The BMI calculator, pricing toggle and testimonial carousel needed clean state handling and input validation.",
       },
     ],
     improvements: [
       {
         title: "Working membership sign-up",
-        detail: "Connect the plans to a real form and backend.",
+        detail: "Connect the plans and the contact form to a real backend.",
       },
       {
         title: "Class schedule",
         detail: "Add a timetable so visitors can see and book sessions.",
-      },
-    ],
-  },
-  {
-    slug: "restaurant-website",
-    title: "Restaurant Website",
-    type: "Restaurant website",
-    category: "Frontend",
-    summary:
-      "A premium, responsive restaurant website with a curated menu, chef story, gallery, testimonials and table reservations.",
-    description:
-      "A premium responsive restaurant website featuring a curated menu, the chef's story, a photo gallery, testimonials and a table reservation section, designed to make a good first impression and drive bookings.",
-    techStack: ["React", "Tailwind CSS", "Vercel"],
-    liveUrl: "https://resaurant-ivory.vercel.app/",
-    // TODO: add GitHub (client) link
-    // githubUrl: "",
-    challenges: [
-      {
-        title: "Making a menu easy to scan",
-        detail:
-          "Dishes, prices and descriptions needed a clear hierarchy that still feels elegant on mobile.",
-      },
-      {
-        title: "A gallery that stays fast",
-        detail:
-          "Many large photos meant careful sizing and loading so the page does not feel heavy.",
-      },
-    ],
-    improvements: [
-      {
-        title: "Real reservations",
-        detail:
-          "Send bookings to a backend with email confirmation instead of a front-end-only form.",
-      },
-      {
-        title: "Online menu management",
-        detail: "Let the restaurant update dishes without touching code.",
-      },
-    ],
-  },
-  {
-    slug: "travel-photographer",
-    title: "Travel Photographer Portfolio",
-    type: "Photography portfolio",
-    category: "Frontend",
-    summary:
-      "A visually immersive portfolio showcasing destinations, curated photo collections and a personal creative journey.",
-    description:
-      "A visually immersive portfolio website showcasing breathtaking destinations, curated photography collections and a personal creative journey, built so the photos stay the focus on every screen size.",
-    techStack: ["React", "Tailwind CSS", "Vercel"],
-    liveUrl: "https://photographer-portfolio-khaki.vercel.app/",
-    // TODO: add GitHub (client) link
-    // githubUrl: "",
-    challenges: [
-      {
-        title: "Image-heavy pages",
-        detail:
-          "Large photos can make a page slow, so images are sized and loaded with performance in mind.",
-      },
-      {
-        title: "A grid that handles any photo shape",
-        detail:
-          "Landscape and portrait shots had to sit together without awkward gaps or cropping.",
-      },
-    ],
-    improvements: [
-      {
-        title: "Lightbox viewer",
-        detail: "Open any photo full screen with keyboard and swipe support.",
-      },
-      {
-        title: "Modern image formats",
-        detail:
-          "Serve WebP or AVIF versions to cut load time without losing quality.",
       },
     ],
   },
