@@ -21,8 +21,6 @@ export type Project = {
   liveUrl?: string;
   /** Client repository only. The button is hidden when this is missing. */
   githubUrl?: string;
-  /** Server repository (full-stack projects only). */
-  serverUrl?: string;
   challenges: Note[];
   improvements: Note[];
 };
@@ -50,7 +48,6 @@ export const PROJECTS: Project[] = [
     ],
     liveUrl: "https://hands-together-client.vercel.app",
     githubUrl: "https://github.com/mahenaj-tabassum/HandsTogether-Client",
-    serverUrl: "https://github.com/mahenaj-tabassum/HandsTogether-Server",
     challenges: [
       {
         title: "Never going over capacity",

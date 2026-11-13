@@ -87,16 +87,6 @@ const ProjectDetail = () => {
                 <FaGithub size={16} /> GitHub
               </a>
             )}
-            {project.serverUrl && (
-              <a
-                href={project.serverUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={linkBtn}
-              >
-                <FaGithub size={16} /> Server
-              </a>
-            )}
           </div>
         </header>
       </Reveal>
@@ -165,44 +155,6 @@ const ProjectDetail = () => {
                 </span>
               ))}
             </div>
-
-            {(project.liveUrl || project.githubUrl || project.serverUrl) && (
-              <div className="mt-6 space-y-2 border-t pt-5 text-sm">
-                {project.liveUrl && (
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between"
-                    style={{ color: "var(--accent)" }}
-                  >
-                    Live demo <ArrowUpRight size={14} />
-                  </a>
-                )}
-                {project.githubUrl && (
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between"
-                    style={{ color: "var(--accent)" }}
-                  >
-                    GitHub <ArrowUpRight size={14} />
-                  </a>
-                )}
-                {project.serverUrl && (
-                  <a
-                    href={project.serverUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between"
-                    style={{ color: "var(--accent)" }}
-                  >
-                    Server repo <ArrowUpRight size={14} />
-                  </a>
-                )}
-              </div>
-            )}
           </div>
         </aside>
       </div>

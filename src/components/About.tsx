@@ -4,10 +4,10 @@ import ProfilePhoto from "./about/ProfilePhoto";
 import InfoCard from "./about/InfoCard";
 
 const PARAGRAPHS = [
-  "I’m Mahenaj Tabassum Powshi, a Full-Stack Developer from Chattogram, Bangladesh, focused on building responsive, user-friendly web applications.",
-  "I work with React, Next.js, Tailwind CSS, Node.js, Express, and MongoDB, with an interest in creating clean interfaces and reliable backend systems.",
-  "I enjoy turning ideas and designs into functional products: from crafting reusable UI components to developing APIs and structuring databases, and polishing the small interactions that make an interface feel alive.",
-  "My approach is simple: write maintainable code, solve problems thoughtfully, and keep improving through hands-on development.",
+  "I’m Mahenaj Tabassum Powshi, a Full-Stack Developer from Chattogram, Bangladesh. I enjoy building modern, user-friendly web applications.",
+  "My programming journey started with JavaScript. I gradually explored frontend and backend development. I enjoy understanding how different technologies work together.",
+  "I love turning ideas into functional products. My interests include building responsive interfaces, creating reusable components, developing APIs, and working with databases.",
+  "I'm always eager to learn, explore new ideas, and improve my development skills through hands-on projects.",
 ];
 
 const INFO = [
