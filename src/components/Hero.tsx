@@ -1,29 +1,87 @@
+import { useEffect, useRef } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { ArrowUpRight, Download, Mail, MapPin } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { SiExpress, SiNextdotjs } from "react-icons/si";
 import { useTypewriter } from "../hooks/useTypewriter";
 
-// Social media and contact links displayed in the Hero section
+/* ------------------------------------------------------------------ */
+/* Helpers                                                             */
+/* ------------------------------------------------------------------ */
+
+// Pointer-driven effects only run for mouse users who haven't asked for
+// reduced motion. Touch devices and reduced-motion users get the static UI.
+const canAnimate = () =>
+  window.matchMedia("(prefers-reduced-motion: no-preference)").matches &&
+  window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+// Micro animation: the card tilts in 3D following the cursor.
+// Listens on the parent so the tilt applies to the inner card only
+// (the parent has its own entrance animation).
+function useTilt<T extends HTMLElement>(max = 7) {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    const host = el?.parentElement;
+    if (!el || !host || !canAnimate()) return;
+
+    let raf = 0;
+    const onMove = (e: PointerEvent) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = host.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform = `perspective(900px) rotateX(${-py * max}deg) rotateY(${px * max}deg)`;
+      });
+    };
+    const onLeave = () => {
+      cancelAnimationFrame(raf);
+      el.style.transform = "";
+    };
+
+    host.addEventListener("pointermove", onMove);
+    host.addEventListener("pointerleave", onLeave);
+    return () => {
+      cancelAnimationFrame(raf);
+      host.removeEventListener("pointermove", onMove);
+      host.removeEventListener("pointerleave", onLeave);
+    };
+  }, [max]);
+
+  return ref;
+}
+
+/* ------------------------------------------------------------------ */
+/* Data                                                                */
+/* ------------------------------------------------------------------ */
+
+// Social media and contact links displayed in the Hero section.
+// `hover` fills the circle with the brand color on hover.
 const SOCIALS = [
   {
     label: "GitHub",
     href: "https://github.com/mahenaj-tabassum",
     icon: <FaGithub size={17} />,
+    hover:
+      "hover:border-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)]",
   },
   {
     label: "LinkedIn",
     href: "https://www.linkedin.com/in/mahenaj-tabassum/",
     icon: <FaLinkedinIn size={17} />,
+    hover: "hover:border-[#0A66C2] hover:bg-[#0A66C2] hover:text-white",
   },
   {
     label: "Email",
     href: "mailto:mahenaj.dev@gmail.com",
     icon: <Mail size={17} />,
+    hover: "hover:border-sky-500 hover:bg-sky-500 hover:text-white",
   },
 ];
 
-// Defines the professional roles displayed in the typewrite animation;.
+// Defines the professional roles displayed in the typewriter animation.
 const ROLES = ["Full-Stack Developer", "MERN Stack Developer"];
 
 // Two badges at opposite corners of the code card. They sit behind the card
@@ -40,7 +98,7 @@ type Badge = {
 const BADGES: Badge[] = [
   {
     name: "Next.js",
-    icon: <SiNextdotjs className="w-4 h-4 text-white" />,
+    icon: <SiNextdotjs className="h-4 w-4 text-[var(--text)]" />,
     pos: "-top-7 -right-3",
     drift: "animate-drift-a",
     dur: "6.5s",
@@ -48,7 +106,7 @@ const BADGES: Badge[] = [
   },
   {
     name: "Express.js",
-    icon: <SiExpress className="w-4 h-4 text-slate-300" />,
+    icon: <SiExpress className="h-4 w-4 text-[var(--text-muted)]" />,
     pos: "-bottom-7 -left-5",
     drift: "animate-drift-b",
     dur: "7.5s",
@@ -56,15 +114,65 @@ const BADGES: Badge[] = [
   },
 ];
 
+/* Code card: syntax colors come from CSS variables so they stay readable
+   in both themes (defined in index.css). */
+const Cmt = ({ children }: { children: ReactNode }) => (
+  <span style={{ color: "var(--text-muted)" }}>{children}</span>
+);
+const Kw = ({ children }: { children: ReactNode }) => (
+  <span style={{ color: "var(--accent)" }}>{children}</span>
+);
+const Id = ({ children }: { children: ReactNode }) => (
+  <span style={{ color: "var(--secondary)" }}>{children}</span>
+);
+const Str = ({ children }: { children: ReactNode }) => (
+  <span style={{ color: "var(--code-green)" }}>{children}</span>
+);
+const Num = ({ children }: { children: ReactNode }) => (
+  <span style={{ color: "var(--code-yellow)" }}>{children}</span>
+);
+
+const CODE_LINES: ReactNode[] = [
+  <Cmt>// full-stack, by design</Cmt>,
+  <>
+    <Kw>const</Kw> <Id>developer</Id> = {"{"}
+  </>,
+  <>
+    {"  "}name: <Str>"Mahenaj Tabassum Powshi"</Str>,
+  </>,
+  <>
+    {"  "}role: <Str>"Full-Stack Developer"</Str>,
+  </>,
+  <>
+    {"  "}location: <Str>"Chattogram, Bangladesh"</Str>,
+  </>,
+  <>
+    {"  "}stack: [<Str>"Next.js"</Str>, <Str>"Node.js"</Str>,{" "}
+    <Str>"MongoDB"</Str>],
+  </>,
+  <>
+    {"  "}projects: <Num>3</Num>,
+  </>,
+  <>
+    {"  "}openToWork: <Num>true</Num>,
+  </>,
+  <>{"};"}</>,
+];
+
+/* ------------------------------------------------------------------ */
+/* Component                                                           */
+/* ------------------------------------------------------------------ */
+
 export default function Hero() {
   const role = useTypewriter(ROLES);
+  const cardRef = useTilt<HTMLDivElement>(7);
 
   const rise = (ms: number): CSSProperties => ({ animationDelay: `${ms}ms` });
 
   return (
     <section
       id="home"
-      className="relative flex min-h-dvh items-center overflow-hidden bg-[#07080d] pt-30 pb-24"
+      className="relative flex min-h-dvh items-center overflow-hidden bg-[var(--bg)] pt-30 pb-24"
     >
       <div className="pointer-events-none absolute -left-40 top-10 h-96 w-96 rounded-full bg-sky-500/10 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-violet-500/10 blur-3xl" />
@@ -73,7 +181,7 @@ export default function Hero() {
         {/* Left: intro */}
         <div className="@container min-w-0">
           <p
-            className="animate-rise inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300"
+            className="animate-rise shimmer inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--text-muted)]"
             style={rise(0)}
           >
             <span className="relative flex h-2 w-2">
@@ -85,17 +193,18 @@ export default function Hero() {
 
           {/* Both lines scale with the column width and never wrap */}
           <h1
-            className="animate-rise mt-6 font-bold tracking-tight text-white"
+            className="animate-rise mt-6 font-bold tracking-tight text-[var(--text)]"
             style={rise(100)}
           >
             <span className="block whitespace-nowrap text-[clamp(2rem,10.5cqw,3.5rem)] leading-[1.15]">
               Hi, I’m Mahenaj
             </span>
+
             {/* Typing animation is decorative; screen readers get the full title */}
             <span className="sr-only">Full-Stack Developer</span>
             <span
               aria-hidden="true"
-              className="block min-h-[1.25em] whitespace-nowrap bg-linear-to-r from-sky-400 via-violet-400 to-fuchsia-400 bg-clip-text pb-1 text-[clamp(1.4rem,7.6cqw,2.75rem)] leading-[1.25] text-transparent"
+              className="text-flow block min-h-[1.25em] whitespace-nowrap bg-linear-to-r from-sky-400 via-violet-400 to-fuchsia-400 bg-clip-text pb-1 text-[clamp(1.4rem,7.6cqw,2.75rem)] leading-[1.25] text-transparent"
             >
               {role}
               <span className="animate-caret ml-1 inline-block h-[0.85em] w-0.5 translate-y-[0.1em] bg-sky-400" />
@@ -103,19 +212,24 @@ export default function Hero() {
           </h1>
 
           <p
-            className="animate-rise mt-5 max-w-lg text-base leading-relaxed text-slate-400"
+            className="animate-rise mt-5 max-w-lg text-base leading-relaxed text-[var(--text-muted)]"
             style={rise(220)}
           >
-            I build full-stack web apps with Next.js, Express, and MongoDB:
-            event platforms, booking apps, and news portals with secure
-            JWT-protected APIs and clean, responsive interfaces.
+            I build thoughtful web applications with React, Next.js, Node.js,
+            Express, and MongoDB. I enjoy turning practical problems into useful
+            products through responsive interfaces, well-structured APIs, and
+            continuous learning.
           </p>
 
           <p
-            className="animate-rise mt-4 inline-flex items-center gap-1.5 text-sm text-slate-500"
+            className="animate-rise group/loc mt-4 inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)]"
             style={rise(280)}
           >
-            <MapPin size={14} /> Chattogram, Bangladesh
+            <MapPin
+              size={14}
+              className="transition duration-300 group-hover/loc:-translate-y-0.5 group-hover/loc:text-sky-400"
+            />{" "}
+            Chattogram, Bangladesh
           </p>
 
           <div
@@ -127,17 +241,23 @@ export default function Hero() {
               target="_blank"
               rel="noopener noreferrer"
               download="Mahenaj_Tabassum_Powshi_Resume.pdf"
-              className="group inline-flex items-center gap-2 rounded-full bg-linear-to-r from-sky-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition duration-200 hover:-translate-y-0.5 hover:shadow-violet-500/40 active:translate-y-0 active:scale-95"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-linear-to-r from-sky-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition duration-200 hover:shadow-violet-500/40 active:scale-95"
             >
+              {/* Shine sweep on hover */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full"
+              />
               <Download
                 size={16}
-                className="transition group-hover:translate-y-0.5"
+                className="relative group-hover:animate-bounce"
               />
-              Download resume
+              <span className="relative">Download resume</span>
             </a>
+
             <a
               href="#projects"
-              className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition duration-200 hover:-translate-y-0.5 hover:border-white/25 active:translate-y-0 active:scale-95"
+              className="group inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-6 py-3 text-sm font-semibold text-[var(--text)] transition duration-200 hover:border-sky-400/60 hover:bg-sky-400/10 active:scale-95"
             >
               View projects
               <ArrowUpRight
@@ -151,14 +271,14 @@ export default function Hero() {
             className="animate-rise mt-8 flex items-center gap-3"
             style={rise(440)}
           >
-            {SOCIALS.map(({ label, href, icon }) => (
+            {SOCIALS.map(({ label, href, icon, hover }) => (
               <a
                 key={label}
                 href={href}
                 target={href.startsWith("http") ? "_blank" : undefined}
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/5 text-slate-300 transition duration-200 hover:-translate-y-1 hover:border-sky-400/60 hover:bg-sky-400/10 hover:text-white active:scale-90"
+                className={`grid h-11 w-11 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition duration-200 hover:-translate-y-1 hover:-rotate-6 active:scale-90 ${hover}`}
               >
                 {icon}
               </a>
@@ -168,7 +288,7 @@ export default function Hero() {
 
         {/* Right: medium code card with 2 floating badges */}
         <div
-          className="animate-rise hidden md:block relative isolate mx-auto w-full max-w-md lg:ml-auto lg:mr-0"
+          className="animate-rise relative isolate mx-auto hidden w-full max-w-md md:block lg:ml-auto lg:mr-0"
           style={rise(250)}
         >
           {/* soft glow behind the card */}
@@ -192,57 +312,48 @@ export default function Hero() {
             </div>
           ))}
 
-          {/* Code Window */}
+          {/* Code Window (tilts with the cursor) */}
           <div
-            className="grad-border glass-strong rounded-[1.1rem] p-5 sm:p-6 shadow-2xl"
+            ref={cardRef}
+            className="grad-border glass-strong rounded-[1.1rem] p-5 shadow-2xl transition-transform duration-200 ease-out will-change-transform sm:p-6"
             style={{ position: "relative", zIndex: 10 }}
           >
-            <div className="flex items-center gap-1.5 mb-4">
+            <div className="mb-4 flex items-center gap-1.5">
               <span
-                className="w-2.5 h-2.5 rounded-full"
+                className="h-2.5 w-2.5 rounded-full"
                 style={{ background: "#f87171" }}
               />
               <span
-                className="w-2.5 h-2.5 rounded-full"
+                className="h-2.5 w-2.5 rounded-full"
                 style={{ background: "#fbbf24" }}
               />
               <span
-                className="w-2.5 h-2.5 rounded-full"
+                className="h-2.5 w-2.5 rounded-full"
                 style={{ background: "#4ade80" }}
               />
               <span
-                className="ml-3 text-xs mono"
+                className="mono ml-3 text-xs"
                 style={{ color: "var(--text-muted)" }}
               >
                 developer.jsx
               </span>
             </div>
 
-            <pre className="mono text-[12.5px] sm:text-[13px] leading-7 overflow-x-auto">
+            {/* Lines type in one after another */}
+            <pre className="mono overflow-x-auto text-[12.5px] leading-7 sm:text-[13px]">
               <code>
-                <span style={{ color: "#8b93ac" }}>
-                  // full-stack, by design
-                </span>
-                {"\n"}
-                <span style={{ color: "#38bdf8" }}>const</span>{" "}
-                <span style={{ color: "#8b5cf6" }}>developer</span> = {"{"}
-                {"\n  "}name:{" "}
-                <span style={{ color: "#4ade80" }}>
-                  "Mahenaj Tabassum Powshi"
-                </span>
-                ,{"\n  "}role:{" "}
-                <span style={{ color: "#4ade80" }}>"Full-Stack Developer"</span>
-                ,{"\n  "}location:{" "}
-                <span style={{ color: "#4ade80" }}>
-                  "Chattogram, Bangladesh"
-                </span>
-                ,{"\n  "}stack: [
-                <span style={{ color: "#4ade80" }}>"Next.js"</span>,{" "}
-                <span style={{ color: "#4ade80" }}>"Node.js"</span>,{" "}
-                <span style={{ color: "#4ade80" }}>"MongoDB"</span>],
-                {"\n  "}projects: <span style={{ color: "#facc15" }}>3</span>,
-                {"\n  "}openToWork:{" "}
-                <span style={{ color: "#facc15" }}>true</span>,{"\n}"};
+                {CODE_LINES.map((line, i) => (
+                  <span
+                    key={i}
+                    className="animate-line block whitespace-pre"
+                    style={{ animationDelay: `${700 + i * 110}ms` }}
+                  >
+                    {line}
+                    {i === CODE_LINES.length - 1 && (
+                      <span className="animate-caret ml-1 inline-block h-[1em] w-0.5 translate-y-[0.15em] bg-sky-400" />
+                    )}
+                  </span>
+                ))}
               </code>
             </pre>
           </div>

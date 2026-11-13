@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, Moon, Sun, X } from "lucide-react";
+import useTheme from "../hooks/useTheme";
 
 const links = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
   { id: "skills", label: "Skills" },
   { id: "projects", label: "Projects" },
+  { id: "services", label: "Services" },
+  { id: "faq", label: "FAQ" },
   { id: "contact", label: "Contact" },
 ];
 
@@ -14,6 +17,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const progressRef = useRef<HTMLDivElement>(null);
+  const { theme, toggleTheme } = useTheme();
 
   // Scroll progress bar + glass background after the first few pixels
   useEffect(() => {
@@ -39,7 +43,7 @@ export default function Navbar() {
     };
   }, []);
 
-  // Scroll-spy: highlight the section currently in the middle of the screen
+  // Scroll-spy
   useEffect(() => {
     const io = new IntersectionObserver(
       (entries) =>
@@ -65,11 +69,13 @@ export default function Navbar() {
     };
   }, [open]);
 
+  const isDark = theme === "dark";
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         scrolled || open
-          ? "border-b border-white/10 bg-[#07080d]/80 backdrop-blur-xl"
+          ? "border-b border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-xl"
           : "border-b border-transparent"
       }`}
     >
@@ -86,21 +92,21 @@ export default function Navbar() {
         </a>
 
         {/* Desktop links */}
-        <ul className="hidden items-center gap-1 lg:flex">
+        <ul className="hidden items-center gap-0.5 lg:flex">
           {links.map(({ id, label }) => (
             <li key={id}>
               <a
                 href={`#${id}`}
                 aria-current={active === id ? "true" : undefined}
-                className={`group relative block px-3.5 py-2 text-sm transition-colors duration-200 ${
+                className={`group relative block px-3 py-2 text-sm transition-colors duration-200 ${
                   active === id
-                    ? "text-white"
-                    : "text-slate-400 hover:text-white"
+                    ? "text-[var(--text)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text)]"
                 }`}
               >
                 {label}
                 <span
-                  className={`absolute inset-x-3.5 -bottom-0.5 h-px origin-left bg-linear-to-r from-sky-400 to-violet-400 transition-transform duration-300 ${
+                  className={`absolute inset-x-3 -bottom-0.5 h-px origin-left bg-linear-to-r from-sky-400 to-violet-400 transition-transform duration-300 ${
                     active === id
                       ? "scale-x-100"
                       : "scale-x-0 group-hover:scale-x-100"
@@ -112,20 +118,48 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center gap-2">
+          {/* Theme toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={
+              isDark ? "Switch to light theme" : "Switch to dark theme"
+            }
+            className="relative grid h-10 w-10 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] transition duration-200 hover:border-sky-400/50 hover:bg-sky-400/10 active:scale-90"
+          >
+            <Sun
+              size={18}
+              className={`absolute transition duration-500 ${
+                isDark
+                  ? "rotate-90 scale-0 opacity-0"
+                  : "rotate-0 scale-100 opacity-100"
+              }`}
+            />
+            <Moon
+              size={18}
+              className={`absolute transition duration-500 ${
+                isDark
+                  ? "rotate-0 scale-100 opacity-100"
+                  : "-rotate-90 scale-0 opacity-0"
+              }`}
+            />
+          </button>
+
           <a
             href="#contact"
-            className="hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition duration-200 hover:border-sky-400/50 hover:bg-sky-400/10 active:scale-95 sm:inline-block"
+            className="hidden rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-medium text-[var(--text)] transition duration-200 hover:border-sky-400/50 hover:bg-sky-400/10 active:scale-95 sm:inline-block"
           >
             Hire me
           </a>
 
+          {/* Mobile menu button */}
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="relative grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white transition active:scale-90 lg:hidden"
+            className="relative grid h-10 w-10 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] transition active:scale-90 lg:hidden"
           >
             <Menu
               size={18}
@@ -166,17 +200,38 @@ export default function Navbar() {
                   href={`#${id}`}
                   onClick={() => setOpen(false)}
                   tabIndex={open ? 0 : -1}
-                  className={`flex items-center justify-between border-b border-white/5 py-3.5 text-base ${
-                    active === id ? "text-sky-300" : "text-slate-300"
+                  className={`flex items-center justify-between border-b border-[var(--border)] py-3.5 text-base ${
+                    active === id
+                      ? "text-[var(--accent)]"
+                      : "text-[var(--text-muted)]"
                   }`}
                 >
                   {label}
                   {active === id && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
                   )}
                 </a>
               </li>
             ))}
+
+            {/* Hire me: ছোট স্ক্রিনে হেডার থেকে লুকানো, তাই মেনুতে রাখা হলো */}
+            <li
+              className={`pt-4 transition duration-300 sm:hidden ${
+                open ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+              }`}
+              style={{
+                transitionDelay: open ? `${links.length * 40}ms` : "0ms",
+              }}
+            >
+              <a
+                href="#contact"
+                onClick={() => setOpen(false)}
+                tabIndex={open ? 0 : -1}
+                className="block rounded-full bg-linear-to-r from-sky-500 to-violet-500 py-3 text-center text-sm font-semibold text-white active:scale-95"
+              >
+                Hire me
+              </a>
+            </li>
           </ul>
         </div>
       </div>
