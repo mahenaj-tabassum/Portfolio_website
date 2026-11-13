@@ -1,28 +1,16 @@
-import {
-  SiReact,
-  SiJavascript,
-  SiHtml5,
-  SiTypescript,
-  SiNodedotjs,
-  SiExpress,
-  SiMongodb,
-  SiGit,
-  SiGithub,
-  SiVercel,
-  SiFigma,
-  SiCss,
-} from "react-icons/si";
-
 import Reveal from "./stylesComponent/Reveal";
-import { RiTailwindCssFill } from "react-icons/ri";
-import { VscVscode } from "react-icons/vsc";
+import SpotCard from "./stylesComponent/SpotCard";
+import StaggerGroup, { StaggerItem } from "./stylesComponent/StaggerGroup";
+import { SKILL_GROUPS } from "../data/skills";
+
+// Group titles rotate through these colors (accent -> secondary -> muted)
+const TITLE_COLORS = ["var(--accent)", "var(--secondary)", "var(--text-muted)"];
 
 const Skills = () => {
   return (
     <section id="skills" className="py-24 lg:py-32 border-t">
       <div className="container-px">
         {/* ================= HEADER ================= */}
-
         <Reveal>
           <div className="max-w-lg">
             <h2
@@ -33,323 +21,80 @@ const Skills = () => {
             </h2>
 
             <p className="mt-4" style={{ color: "var(--text-muted)" }}>
-              The tools I use daily, and the ones I'm actively picking up next.
+              The tools I build with, and the practices behind how I work.
             </p>
           </div>
         </Reveal>
 
         {/* ================= SKILL GROUPS ================= */}
+        <div className="mt-14 space-y-14">
+          {SKILL_GROUPS.map((group, groupIndex) => {
+            // Items with a note are big cards, the rest are compact chips
+            const cards = group.items.filter((item) => item.note);
+            const chips = group.items.filter((item) => !item.note);
 
-        <div className="mt-14 space-y-12">
-          {/* ================= FRONTEND ================= */}
+            return (
+              <StaggerGroup key={group.title}>
+                <h3
+                  className="mb-5 text-sm font-medium tracking-wide"
+                  style={{
+                    color: TITLE_COLORS[groupIndex % TITLE_COLORS.length],
+                  }}
+                >
+                  {group.title}
+                </h3>
 
-          <Reveal>
-            <div>
-              <h3
-                className="text-sm font-medium tracking-wide mb-5"
-                style={{ color: "var(--accent)" }}
-              >
-                Frontend
-              </h3>
+                {/* Big cards */}
+                {cards.length > 0 && (
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                    {cards.map(({ name, icon: Icon, color, note }, i) => (
+                      <StaggerItem key={name} index={i} className="h-full">
+                        <SpotCard className="glass lift h-full rounded-xl p-5">
+                          <Icon
+                            className="h-[26px] w-[26px]"
+                            style={{ color: color ?? "var(--accent)" }}
+                          />
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                {/* React */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiReact className="w-[26px] h-[26px] text-[#61DAFB]" />
+                          <h4
+                            className="font-display mt-3 text-sm font-semibold"
+                            style={{ color: "var(--text)" }}
+                          >
+                            {name}
+                          </h4>
 
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
+                          <p
+                            className="mt-1 text-xs leading-relaxed"
+                            style={{ color: "var(--text-muted)" }}
+                          >
+                            {note}
+                          </p>
+                        </SpotCard>
+                      </StaggerItem>
+                    ))}
+                  </div>
+                )}
+
+                {/* Compact chips: keep the stagger going after the cards */}
+                {chips.length > 0 && (
+                  <div
+                    className={`flex flex-wrap gap-2.5 ${cards.length > 0 ? "mt-4" : ""}`}
                   >
-                    React
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Building reusable component-based interfaces.
-                  </p>
-                </div>
-
-                {/* JavaScript */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiJavascript className="w-[26px] h-[26px] text-[#F7DF1E]" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    JavaScript
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Writing clean, modern ES6+ logic.
-                  </p>
-                </div>
-
-                {/* HTML5 */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiHtml5 className="w-[26px] h-[26px] text-[#E34F26]" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    HTML5
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Semantic, accessible markup.
-                  </p>
-                </div>
-
-                {/* CSS3 */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiCss className="w-[26px] h-[26px] text-[#1572B6]" />
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    CSS3
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Layouts with Flexbox and Grid.
-                  </p>
-                </div>
-
-                {/* Tailwind CSS */}
-                <div className="glass rounded-xl p-5 lift">
-                  <RiTailwindCssFill className="w-[26px] h-[26px] text-[#06B6D4]" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    Tailwind CSS
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Fast, consistent utility-first styling.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-
-          {/* ================= CURRENTLY LEARNING ================= */}
-
-          <Reveal>
-            <div>
-              <h3
-                className="text-sm font-medium tracking-wide mb-5"
-                style={{ color: "var(--secondary)" }}
-              >
-                Currently learning
-              </h3>
-
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* TypeScript */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiTypescript className="w-[26px] h-[26px] text-[#3178C6]" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    TypeScript
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Adding static typing to catch bugs earlier.
-                  </p>
-                </div>
-
-                {/* Node.js */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiNodedotjs className="w-[26px] h-[26px] text-[#339933]" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    Node.js
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Running JavaScript on the server.
-                  </p>
-                </div>
-
-                {/* Express */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiExpress className="w-[26px] h-[26px] text-white" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    Express
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Building simple REST APIs.
-                  </p>
-                </div>
-
-                {/* MongoDB */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiMongodb className="w-[26px] h-[26px] text-[#47A248]" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    MongoDB
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Storing and querying app data.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-
-          {/* ================= TOOLS ================= */}
-
-          <Reveal>
-            <div>
-              <h3
-                className="text-sm font-medium tracking-wide mb-5"
-                style={{ color: "var(--text-muted)" }}
-              >
-                Tools
-              </h3>
-
-              <div className="grid sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                {/* Git */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiGit className="w-[26px] h-[26px] text-[#F05032]" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    Git
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Tracking changes with confidence.
-                  </p>
-                </div>
-
-                {/* GitHub */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiGithub className="w-[26px] h-[26px] text-white" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    GitHub
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Hosting and shipping projects.
-                  </p>
-                </div>
-
-                {/* VS Code */}
-                <div className="glass rounded-xl p-5 lift">
-                  <VscVscode className="w-[26px] h-[26px] text-[#007ACC]" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    VS Code
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    My daily editor of choice.
-                  </p>
-                </div>
-
-                {/* Vercel */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiVercel className="w-[26px] h-[26px] text-white" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    Vercel
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Deploying fast, previewable builds.
-                  </p>
-                </div>
-
-                {/* Figma */}
-                <div className="glass rounded-xl p-5 lift">
-                  <SiFigma className="w-[26px] h-[26px] text-[#F24E1E]" />
-
-                  <h4
-                    className="font-display mt-3 text-sm font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    Figma
-                  </h4>
-
-                  <p
-                    className="mt-1 text-xs leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    Reading and translating design files.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Reveal>
+                    {chips.map(({ name, icon: Icon, color }, j) => (
+                      <StaggerItem key={name} index={cards.length + j}>
+                        <SpotCard className="glass inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-xs">
+                          <Icon
+                            className="h-3.5 w-3.5 shrink-0"
+                            style={{ color: color ?? "var(--accent)" }}
+                          />
+                          <span style={{ color: "var(--text)" }}>{name}</span>
+                        </SpotCard>
+                      </StaggerItem>
+                    ))}
+                  </div>
+                )}
+              </StaggerGroup>
+            );
+          })}
         </div>
       </div>
     </section>

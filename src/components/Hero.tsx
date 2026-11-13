@@ -172,12 +172,13 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative flex min-h-dvh items-center overflow-hidden bg-[var(--bg)] pt-30 pb-24"
+      aria-labelledby="hero-heading"
+      className="relative z-10 flex min-h-dvh items-center overflow-hidden bg-transparent pt-30 pb-24"
     >
       <div className="pointer-events-none absolute -left-40 top-10 h-96 w-96 rounded-full bg-sky-500/10 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-violet-500/10 blur-3xl" />
 
-      <div className="relative mx-auto grid w-full max-w-6xl items-center gap-14 px-5 lg:grid-cols-2">
+      <div className="container-px grid items-center gap-14 lg:grid-cols-2">
         {/* Left: intro */}
         <div className="@container min-w-0">
           <p
@@ -291,9 +292,6 @@ export default function Hero() {
           className="animate-rise relative isolate mx-auto hidden w-full max-w-md md:block lg:ml-auto lg:mr-0"
           style={rise(250)}
         >
-          {/* soft glow behind the card */}
-          <div className="pointer-events-none absolute inset-x-6 -inset-y-6 rounded-full bg-blue-800/15 blur-3xl" />
-
           {BADGES.map((b) => (
             <div
               key={b.name}

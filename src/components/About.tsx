@@ -1,141 +1,64 @@
-import { MapPin, Globe, BookOpen } from "lucide-react";
-import { SiReact } from "react-icons/si";
+import { BookOpen, Code2, Globe, MapPin } from "lucide-react";
 import Reveal from "./stylesComponent/Reveal";
+import ProfilePhoto from "./about/ProfilePhoto";
+import InfoCard from "./about/InfoCard";
+
+const PARAGRAPHS = [
+  "I’m Mahenaj Tabassum Powshi, a Full-Stack Developer from Chattogram, Bangladesh, focused on building responsive, user-friendly web applications.",
+  "I work with React, Next.js, Tailwind CSS, Node.js, Express, and MongoDB, with an interest in creating clean interfaces and reliable backend systems.",
+  "I enjoy turning ideas and designs into functional products: from crafting reusable UI components to developing APIs and structuring databases, and polishing the small interactions that make an interface feel alive.",
+  "My approach is simple: write maintainable code, solve problems thoughtfully, and keep improving through hands-on development.",
+];
+
+const INFO = [
+  { icon: MapPin, label: "Based in Bangladesh" },
+  { icon: Globe, label: "Open to international clients" },
+  { icon: Code2, label: "Full-Stack Developer" },
+  { icon: BookOpen, label: "Always learning" },
+];
 
 const About = () => {
   return (
-    <section id="about" className="py-24 lg:py-32 border-t">
-      <div className="container-px grid lg:grid-cols-[0.85fr_1.15fr] gap-16 items-center">
-        {/* ================= LEFT SIDE ================= */}
+    <section id="about" className="border-t py-24 lg:py-20">
+      <div className="container-px grid items-center gap-16 lg:grid-cols-[0.85fr_1.15fr]">
+        {/* Left: photo / cartoon / placeholder */}
+        <ProfilePhoto />
 
-        <Reveal>
-          <div>
-            <div className="relative w-full max-w-sm mx-auto lg:mx-0">
-              {/* Glow behind illustration */}
+        {/* Right: text + info cards */}
+        <div>
+          <Reveal delay="0.1s">
+            <div>
+              <h2
+                className="font-display text-3xl font-semibold sm:text-4xl"
+                style={{ color: "var(--text)" }}
+              >
+                About me
+              </h2>
+
               <div
-                className="absolute -inset-4 rounded-[2rem] float-a"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgba(56,189,248,.18), transparent 70%)",
-                  filter: "blur(30px)",
-                }}
-                aria-hidden="true"
-              />
-
-              {/* Illustration Container */}
-              <div className="relative grad-border glass-strong rounded-[1.6rem] aspect-[4/5] grid place-items-center overflow-hidden">
-                <svg viewBox="0 0 200 240" className="w-2/3" aria-hidden="true">
-                  {/* Head */}
-                  <circle cx="100" cy="82" r="46" fill="url(#g1)" />
-
-                  {/* Body */}
-                  <path
-                    d="M30 220c8-52 44-84 70-84s62 32 70 84"
-                    fill="url(#g2)"
-                  />
-
-                  {/* Gradients */}
-                  <defs>
-                    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0" stopColor="#38bdf8" />
-                      <stop offset="1" stopColor="#3355f4" />
-                    </linearGradient>
-
-                    <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0" stopColor="#3355f4" />
-                      <stop offset="1" stopColor="#8b5cf6" />
-                    </linearGradient>
-                  </defs>
-                </svg>
+                className="mt-6 space-y-4 text-[15px] leading-relaxed sm:text-base"
+                style={{ color: "var(--text-muted)" }}
+              >
+                {PARAGRAPHS.map((text) => (
+                  <p key={text}>{text}</p>
+                ))}
               </div>
             </div>
+          </Reveal>
+
+          {/* Cards rise one after another */}
+          <div className="mt-8 grid max-w-lg gap-3 sm:grid-cols-2">
+            {INFO.map(({ icon, label }, index) => (
+              <Reveal
+                key={label}
+                delay={`${0.2 + index * 0.08}s`}
+                className="h-full"
+              >
+                <InfoCard icon={icon} label={label} />
+              </Reveal>
+            ))}
           </div>
-        </Reveal>
-
-        {/* ================= RIGHT SIDE ================= */}
-
-        <Reveal delay="0.1s">
-          <div>
-            {/* Heading */}
-            <h2
-              className="font-display font-semibold text-3xl sm:text-4xl"
-              style={{ color: "var(--text)" }}
-            >
-              About me
-            </h2>
-
-            {/* Description */}
-            <div
-              className="mt-6 space-y-4 max-w-xl text-[15px] sm:text-base leading-relaxed"
-              style={{ color: "var(--text-muted)" }}
-            >
-              <p>Hi, I'm Mahenaj Tabassum Powhi.</p>
-
-              <p>
-                I'm a frontend developer from Bangladesh who enjoys turning
-                designs into responsive, interactive websites.
-              </p>
-
-              <p>
-                My current focus is building production-quality React projects
-                while improving my full-stack skills.
-              </p>
-
-              <p>
-                I believe great websites should feel fast, clean, and
-                effortless.
-              </p>
-            </div>
-
-            {/* Info Cards */}
-            <div className="mt-8 grid grid-cols-2 gap-3 max-w-lg">
-              {/* Location */}
-              <div
-                className="glass rounded-xl px-4 py-3.5 flex items-center gap-2.5 text-sm"
-                style={{ color: "var(--text)" }}
-              >
-                <MapPin
-                  className="w-4 h-4 shrink-0"
-                  style={{ color: "var(--accent)" }}
-                />
-                Based in Bangladesh
-              </div>
-
-              {/* International Clients */}
-              <div
-                className="glass rounded-xl px-4 py-3.5 flex items-center gap-2.5 text-sm"
-                style={{ color: "var(--text)" }}
-              >
-                <Globe
-                  className="w-4 h-4 shrink-0"
-                  style={{ color: "var(--accent)" }}
-                />
-                Open to international clients
-              </div>
-
-              {/* React */}
-              <div
-                className="glass rounded-xl px-4 py-3.5 flex items-center gap-2.5 text-sm"
-                style={{ color: "var(--text)" }}
-              >
-                <SiReact className="w-4 h-4 shrink-0 text-[#06B6D4]" />
-                React developer
-              </div>
-
-              {/* Learning */}
-              <div
-                className="glass rounded-xl px-4 py-3.5 flex items-center gap-2.5 text-sm"
-                style={{ color: "var(--text)" }}
-              >
-                <BookOpen
-                  className="w-4 h-4 shrink-0"
-                  style={{ color: "var(--accent)" }}
-                />
-                Full-time learner
-              </div>
-            </div>
-          </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

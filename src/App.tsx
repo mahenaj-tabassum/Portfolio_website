@@ -34,7 +34,7 @@ function App() {
 
       <Navbar />
 
-      <main id="main">
+      <main className="relative z-10" id="main">
         <Hero />
         <About />
         <Skills />
