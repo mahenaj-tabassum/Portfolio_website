@@ -238,7 +238,7 @@ export default function Hero() {
             style={rise(340)}
           >
             <a
-              href="/resume.pdf"
+              href="/my-resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
               download="Mahenaj_Tabassum_Powshi_Resume.pdf"
