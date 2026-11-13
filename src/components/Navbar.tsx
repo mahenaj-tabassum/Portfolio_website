@@ -1,269 +1,191 @@
-import { useEffect, useState } from "react";
-import { Menu, SunMoon, X } from "lucide-react";
-import useTheme from "../hooks/useTheme";
+import { useEffect, useRef, useState } from "react";
+import { Menu, X } from "lucide-react";
 
-const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const links = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "skills", label: "Skills" },
+  { id: "projects", label: "Projects" },
+  { id: "contact", label: "Contact" },
+];
+
+export default function Navbar() {
+  const [active, setActive] = useState("home");
+  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
+  const progressRef = useRef<HTMLDivElement>(null);
 
-  const { toggleTheme } = useTheme();
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
-
+  // Scroll progress bar + glass background after the first few pixels
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const y = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setScrolled(y > 12);
+      progressRef.current?.style.setProperty(
+        "transform",
+        `scaleX(${max > 0 ? y / max : 0})`,
+      );
     };
-
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
-    handleScroll();
-
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
     };
   }, []);
 
+  // Scroll-spy: highlight the section currently in the middle of the screen
   useEffect(() => {
-    const sections = ["home", "about", "skills", "projects", "contact"];
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      {
-        rootMargin: "-45% 0px -50% 0px",
-      },
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: "-45% 0px -50% 0px" },
     );
-
-    sections.forEach((id) => {
-      const section = document.getElementById(id);
-
-      if (section) {
-        observer.observe(section);
-      }
+    links.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) io.observe(el);
     });
-
-    return () => {
-      observer.disconnect();
-    };
+    return () => io.disconnect();
   }, []);
+
+  // Mobile menu: close on Escape, lock page scroll while open
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   return (
     <header
-      id="navbar"
-      className="fixed top-0 inset-x-0 z-50 transition-all duration-300"
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled || open
+          ? "border-b border-white/10 bg-[#07080d]/80 backdrop-blur-xl"
+          : "border-b border-transparent"
+      }`}
     >
       <nav
-        className={`
-          w-full
-          transition-all duration-300
-          ${
-            scrolled
-              ? "bg-white/5 backdrop-blur-xl border-b border-white/10"
-              : "bg-transparent border-b border-transparent"
-          }
-        `}
-        aria-label="Primary"
+        aria-label="Main"
+        className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5"
       >
-        <div className="container-px flex items-center justify-between h-16 lg:h-[72px]">
-          {/* Logo */}
+        <a
+          href="#home"
+          aria-label="Mahenaj Tabassum Powshi, back to top"
+          className="group grid h-10 w-10 place-items-center rounded-xl bg-linear-to-br from-sky-400 to-violet-500 text-sm font-bold text-white shadow-lg shadow-sky-500/20 transition duration-300 hover:-rotate-6 hover:scale-105 active:scale-95"
+        >
+          MT
+        </a>
+
+        {/* Desktop links */}
+        <ul className="hidden items-center gap-1 lg:flex">
+          {links.map(({ id, label }) => (
+            <li key={id}>
+              <a
+                href={`#${id}`}
+                aria-current={active === id ? "true" : undefined}
+                className={`group relative block px-3.5 py-2 text-sm transition-colors duration-200 ${
+                  active === id
+                    ? "text-white"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                {label}
+                <span
+                  className={`absolute inset-x-3.5 -bottom-0.5 h-px origin-left bg-linear-to-r from-sky-400 to-violet-400 transition-transform duration-300 ${
+                    active === id
+                      ? "scale-x-100"
+                      : "scale-x-0 group-hover:scale-x-100"
+                  }`}
+                />
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex items-center gap-2">
           <a
-            href="#home"
-            className={`navlink pb-1 ${
-              activeSection === "home" ? "active" : ""
-            }`}
-            style={{ color: "var(--text)" }}
-            onClick={closeMenu}
+            href="#contact"
+            className="hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition duration-200 hover:border-sky-400/50 hover:bg-sky-400/10 active:scale-95 sm:inline-block"
           >
-            <span
-              className="inline-flex items-center justify-center w-9 h-9 rounded-lg font-display font-bold"
-              style={{
-                background:
-                  "linear-gradient(135deg,var(--accent),var(--primary))",
-                color: "#06070d",
-              }}
-            >
-              MT
-            </span>
+            Hire me
           </a>
 
-          {/* Desktop Navigation */}
-          <ul
-            className="hidden md:flex items-center gap-8 text-sm"
-            style={{ color: "var(--text-muted)" }}
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            className="relative grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white transition active:scale-90 lg:hidden"
           >
-            <li>
-              <a
-                href="#home"
-                className={`navlink pb-1 ${
-                  activeSection === "home" ? "active" : ""
-                }`}
-              >
-                Home
-              </a>
-            </li>
-
-            <li>
-              <a
-                href="#about"
-                className={`navlink pb-1 ${
-                  activeSection === "about" ? "active" : ""
-                }`}
-              >
-                About
-              </a>
-            </li>
-
-            <li>
-              <a
-                href="#skills"
-                className={`navlink pb-1 ${
-                  activeSection === "skills" ? "active" : ""
-                }`}
-              >
-                Skills
-              </a>
-            </li>
-
-            <li>
-              <a
-                href="#projects"
-                className={`navlink pb-1 ${
-                  activeSection === "projects" ? "active" : ""
-                }`}
-              >
-                Projects
-              </a>
-            </li>
-
-            <li>
-              <a
-                href="#contact"
-                className={`navlink pb-1 ${
-                  activeSection === "contact" ? "active" : ""
-                }`}
-              >
-                Contact
-              </a>
-            </li>
-          </ul>
-
-          {/* Right-side buttons */}
-          <div className="flex items-center gap-2">
-            {/* Theme button */}
-            <button
-              type="button"
-              aria-label="Toggle color theme"
-              onClick={toggleTheme}
-              className="
-                w-10 h-10
-                cursor-pointer
-                grid place-items-center
-                rounded-full
-                bg-white/5
-                backdrop-blur-md
-                border border-white/10
-                transition-transform duration-200
-                hover:scale-110
-              "
-            >
-              <SunMoon
-                className="w-[18px] h-[18px]"
-                style={{ color: "var(--text)" }}
-              />
-            </button>
-
-            {/* Mobile menu button */}
-            <button
-              type="button"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={isMenuOpen}
-              aria-controls="mobileMenu"
-              onClick={() => setIsMenuOpen((previous) => !previous)}
-              className="
-                md:hidden
-                cursor-pointer
-                w-10 h-10
-                grid place-items-center
-                rounded-full
-                bg-white/5
-                backdrop-blur-md
-                border border-white/10
-                transition-transform duration-200
-                hover:scale-110
-              "
-            >
-              {isMenuOpen ? (
-                <X className="w-5 h-5" style={{ color: "var(--text)" }} />
-              ) : (
-                <Menu className="w-5 h-5" style={{ color: "var(--text)" }} />
-              )}
-            </button>
-          </div>
+            <Menu
+              size={18}
+              className={`absolute transition duration-300 ${
+                open ? "rotate-90 scale-50 opacity-0" : ""
+              }`}
+            />
+            <X
+              size={18}
+              className={`absolute transition duration-300 ${
+                open ? "" : "-rotate-90 scale-50 opacity-0"
+              }`}
+            />
+          </button>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu */}
       <div
-        id="mobileMenu"
-        className={`
-          md:hidden
-          mx-4 mt-2
-          rounded-2xl
-          overflow-hidden
-          bg-white/5
-          backdrop-blur-xl
-          border border-white/10
-          ${isMenuOpen ? "block" : "hidden"}
-        `}
+        id="mobile-menu"
+        className={`grid transition-[grid-template-rows] duration-300 ease-out lg:hidden ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
       >
-        <ul
-          className="flex flex-col py-2 text-base"
-          style={{ color: "var(--text)" }}
-        >
-          <li>
-            <a href="#home" className="block px-6 py-3" onClick={closeMenu}>
-              Home
-            </a>
-          </li>
-
-          <li>
-            <a href="#about" className="block px-6 py-3" onClick={closeMenu}>
-              About
-            </a>
-          </li>
-
-          <li>
-            <a href="#skills" className="block px-6 py-3" onClick={closeMenu}>
-              Skills
-            </a>
-          </li>
-
-          <li>
-            <a href="#projects" className="block px-6 py-3" onClick={closeMenu}>
-              Projects
-            </a>
-          </li>
-
-          <li>
-            <a href="#contact" className="block px-6 py-3" onClick={closeMenu}>
-              Contact
-            </a>
-          </li>
-        </ul>
+        <div className="overflow-hidden">
+          <ul className="mx-auto flex max-w-6xl flex-col px-5 pb-5">
+            {links.map(({ id, label }, i) => (
+              <li
+                key={id}
+                className={`transition duration-300 ${
+                  open
+                    ? "translate-y-0 opacity-100"
+                    : "-translate-y-2 opacity-0"
+                }`}
+                style={{ transitionDelay: open ? `${i * 40}ms` : "0ms" }}
+              >
+                <a
+                  href={`#${id}`}
+                  onClick={() => setOpen(false)}
+                  tabIndex={open ? 0 : -1}
+                  className={`flex items-center justify-between border-b border-white/5 py-3.5 text-base ${
+                    active === id ? "text-sky-300" : "text-slate-300"
+                  }`}
+                >
+                  {label}
+                  {active === id && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
+
+      {/* Scroll progress */}
+      <div
+        ref={progressRef}
+        className="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-linear-to-r from-sky-400 via-violet-400 to-fuchsia-400"
+      />
     </header>
   );
-};
-
-export default Navbar;
+}

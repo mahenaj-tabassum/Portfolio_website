@@ -25,6 +25,97 @@
   --accent: #38bdf8;
 }
 
+@theme {
+  --animate-rise: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-line: line-in 0.45s ease-out both;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-caret: caret 1s steps(1) infinite;
+  --animate-drift-a: drift-a 7s ease-in-out infinite;
+  --animate-drift-b: drift-b 7s ease-in-out infinite;
+  --animate-drift-c: drift-c 7s ease-in-out infinite;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes line-in {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -8px;
+    }
+  }
+  @keyframes drift-a {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    33% {
+      translate: 6px -7px;
+    }
+    66% {
+      translate: -5px 4px;
+    }
+  }
+  @keyframes drift-b {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    33% {
+      translate: -7px 5px;
+    }
+    66% {
+      translate: 5px -6px;
+    }
+  }
+  @keyframes drift-c {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 4px -8px;
+    }
+    75% {
+      translate: -6px 3px;
+    }
+  }
+  @keyframes caret {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
 /* =========================
    Light Theme
 ========================= */
@@ -521,13 +612,24 @@ code,
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
 }
 
-.project-card{
-  transition:.45s ease;
+.project-card {
+  transition: 0.45s ease;
 }
 
-.project-card:hover{
-  transform:translateY(-10px);
+.project-card:hover {
+  transform: translateY(-10px);
   box-shadow:
-    0 20px 60px rgba(0,0,0,.35),
-    0 0 40px rgba(99,102,241,.18);
+    0 20px 60px rgba(0, 0, 0, 0.35),
+    0 0 40px rgba(99, 102, 241, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
