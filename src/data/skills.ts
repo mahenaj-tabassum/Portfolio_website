@@ -1,29 +1,16 @@
 import type { ComponentType, CSSProperties } from "react";
 import {
   BadgeCheck,
-  Bot,
-  BrainCircuit,
-  Boxes,
-  Code2,
   Component,
   Database,
-  FileCog,
   Globe,
   KeyRound,
   Layers,
-  ListFilter,
   LockKeyhole,
-  MessageSquareText,
-  MousePointer2,
   Network,
   Plug,
-  ScanSearch,
   ShieldCheck,
-  Smartphone,
-  Sparkles,
-  Table,
   TriangleAlert,
-  Users,
   Workflow,
 } from "lucide-react";
 import {
@@ -36,7 +23,6 @@ import {
   SiJavascript,
   SiJsonwebtokens,
   SiMongodb,
-  SiMongoose,
   SiNextdotjs,
   SiNodedotjs,
   SiNpm,
@@ -227,5 +213,4 @@ export const SKILL_GROUPS: SkillGroup[] = [
       },
     ],
   },
-
 ];
