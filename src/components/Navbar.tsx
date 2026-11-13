@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import useTheme from "../hooks/useTheme";
 
@@ -18,6 +19,17 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const progressRef = useRef<HTMLDivElement>(null);
   const { theme, toggleTheme } = useTheme();
+  const { pathname } = useLocation();
+
+  const isHome = pathname === "/";
+
+  // On the home page the scroll-spy decides the active link.
+  // On a project page, "Projects" stays highlighted. Elsewhere, nothing.
+  const current = isHome
+    ? active
+    : pathname.startsWith("/projects/")
+      ? "projects"
+      : "";
 
   // Scroll progress bar + glass background after the first few pixels
   useEffect(() => {
@@ -41,10 +53,12 @@ export default function Navbar() {
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [pathname]);
 
-  // Scroll-spy
+  // Scroll-spy (home page only: the sections only exist there)
   useEffect(() => {
+    if (!isHome) return;
+
     const io = new IntersectionObserver(
       (entries) =>
         entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
@@ -55,7 +69,7 @@ export default function Navbar() {
       if (el) io.observe(el);
     });
     return () => io.disconnect();
-  }, []);
+  }, [isHome]);
 
   // Mobile menu: close on Escape, lock page scroll while open
   useEffect(() => {
@@ -83,23 +97,23 @@ export default function Navbar() {
         aria-label="Main"
         className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5"
       >
-        <a
-          href="#home"
+        <Link
+          to="/#home"
           aria-label="Mahenaj Tabassum Powshi, back to top"
           className="group grid h-10 w-10 place-items-center rounded-xl bg-linear-to-br from-sky-400 to-violet-500 text-sm font-bold text-white shadow-lg shadow-sky-500/20 transition duration-300 hover:-rotate-6 hover:scale-105 active:scale-95"
         >
           MT
-        </a>
+        </Link>
 
         {/* Desktop links */}
         <ul className="hidden items-center gap-0.5 lg:flex">
           {links.map(({ id, label }) => (
             <li key={id}>
-              <a
-                href={`#${id}`}
-                aria-current={active === id ? "true" : undefined}
+              <Link
+                to={`/#${id}`}
+                aria-current={current === id ? "true" : undefined}
                 className={`group relative block px-3 py-2 text-sm transition-colors duration-200 ${
-                  active === id
+                  current === id
                     ? "text-[var(--text)]"
                     : "text-[var(--text-muted)] hover:text-[var(--text)]"
                 }`}
@@ -107,12 +121,12 @@ export default function Navbar() {
                 {label}
                 <span
                   className={`absolute inset-x-3 -bottom-0.5 h-px origin-left bg-linear-to-r from-sky-400 to-violet-400 transition-transform duration-300 ${
-                    active === id
+                    current === id
                       ? "scale-x-100"
                       : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
@@ -145,12 +159,12 @@ export default function Navbar() {
             />
           </button>
 
-          <a
-            href="#contact"
+          <Link
+            to="/#contact"
             className="hidden rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm font-medium text-[var(--text)] transition duration-200 hover:border-sky-400/50 hover:bg-sky-400/10 active:scale-95 sm:inline-block"
           >
             Hire me
-          </a>
+          </Link>
 
           {/* Mobile menu button */}
           <button
@@ -196,25 +210,25 @@ export default function Navbar() {
                 }`}
                 style={{ transitionDelay: open ? `${i * 40}ms` : "0ms" }}
               >
-                <a
-                  href={`#${id}`}
+                <Link
+                  to={`/#${id}`}
                   onClick={() => setOpen(false)}
                   tabIndex={open ? 0 : -1}
                   className={`flex items-center justify-between border-b border-[var(--border)] py-3.5 text-base ${
-                    active === id
+                    current === id
                       ? "text-[var(--accent)]"
                       : "text-[var(--text-muted)]"
                   }`}
                 >
                   {label}
-                  {active === id && (
+                  {current === id && (
                     <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
                   )}
-                </a>
+                </Link>
               </li>
             ))}
 
-            {/* Hire me: ছোট স্ক্রিনে হেডার থেকে লুকানো, তাই মেনুতে রাখা হলো */}
+            {/* "Hire me" is hidden from the header on small screens, so it lives in the menu */}
             <li
               className={`pt-4 transition duration-300 sm:hidden ${
                 open ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
@@ -223,14 +237,14 @@ export default function Navbar() {
                 transitionDelay: open ? `${links.length * 40}ms` : "0ms",
               }}
             >
-              <a
-                href="#contact"
+              <Link
+                to="/#contact"
                 onClick={() => setOpen(false)}
                 tabIndex={open ? 0 : -1}
                 className="block rounded-full bg-linear-to-r from-sky-500 to-violet-500 py-3 text-center text-sm font-semibold text-white active:scale-95"
               >
                 Hire me
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

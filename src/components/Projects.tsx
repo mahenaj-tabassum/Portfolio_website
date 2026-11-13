@@ -1,91 +1,51 @@
-import { ArrowUpRight} from "lucide-react";
-import gymImg from "../assets/img1.png";
-import resImg from "../assets/img2.png";
-import travelImg from "../assets/img3.png";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Reveal from "./stylesComponent/Reveal";
+import ProjectRow from "./projects/ProjectRow";
+import { CATEGORIES, PROJECTS } from "../data/projects";
+import type { ProjectCategory } from "../data/projects";
 
-type Project = {
-  title: string;
-  description: string;
-  tags: string[];
-  image: string;
-  liveUrl: string;
-  codeUrl: string;
-};
+type Filter = "All" | ProjectCategory;
 
+const FILTERS: Filter[] = ["All", ...CATEGORIES];
 
-const projects: Project[] = [
-  {
-    title: "Gym Website",
-    description:
-      "A modern fitness website designed to showcase gym programs, trainers, membership plans, facilities, and an engaging user experience.",
-    tags: ["React", "Tailwind", "Responsive", "Vercel"],
-    image: gymImg,
-    liveUrl: "https://ironforge-gym-website-eta.vercel.app/",
-    codeUrl: "https://github.com/mahenaj-tabassum/Gym_website",
-  },
-  {
-    title: "Restaurant Website",
-    description:
-      "A premium responsive restaurant website featuring a curated menu, chef story, gallery, testimonials, and table reservations.",
-    tags: ["React", "Tailwind", "Gallery", "Reservations"],
-    image: resImg,
-    liveUrl: "https://resaurant-ivory.vercel.app/",
-    codeUrl: "#",
-  },
-  {
-    title: "Travel Photographer Portfolio",
-    description:
-      "A visually immersive portfolio website showcasing breathtaking destinations, curated photography collections, and a personal creative journey.",
-    tags: ["React", "Tailwind", "Portfolio", "Photography"],
-    image: travelImg,
-    liveUrl: "https://photographer-portfolio-khaki.vercel.app/",
-    codeUrl: "#",
-  },
-];
-
-const BrowserPreview = ({ project }: { project: Project }) => {
-  return (
-    <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#111111]">
-      {/* Browser Bar */}
-      <div className="flex items-center gap-2 border-b border-white/10 bg-[#1a1a1a] px-4 py-3">
-        <span className="h-3 w-3 rounded-full bg-red-400" />
-        <span className="h-3 w-3 rounded-full bg-yellow-400" />
-        <span className="h-3 w-3 rounded-full bg-green-400" />
-        <div className="ml-3 h-7 flex-1 rounded-full bg-white/5" />
-      </div>
-
-      {/* Screenshot */}
-      <div className="relative overflow-hidden">
-        <img
-          src={project.image}
-          alt={project.title}
-          className="aspect-[16/10] w-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/45 opacity-0 transition duration-300 group-hover:opacity-100" />
-
-        {/* Hover Buttons */}
-        <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 transition duration-300 group-hover:opacity-100">
-          <a
-            href={project.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition hover:scale-105"
-          >
-            Live Demo
-          </a>
-        </div>
-
-        {/* Shine Effect */}
-        <div className="pointer-events-none absolute inset-0 -translate-x-[120%] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700 group-hover:translate-x-[120%]" />
-      </div>
-    </div>
-  );
-};
+const countFor = (filter: Filter) =>
+  filter === "All"
+    ? PROJECTS.length
+    : PROJECTS.filter((project) => project.category === filter).length;
 
 const Projects = () => {
+  const [filter, setFilter] = useState<Filter>("All");
+
+  // Sliding highlight behind the active tab
+  const tabRefs = useRef<Partial<Record<Filter, HTMLButtonElement | null>>>({});
+  const [pill, setPill] = useState({ left: 0, width: 0 });
+  const [animatePill, setAnimatePill] = useState(false);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const tab = tabRefs.current[filter];
+      if (tab) setPill({ left: tab.offsetLeft, width: tab.offsetWidth });
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    // Fonts can change the tab widths after the first paint
+    document.fonts?.ready.then(measure);
+
+    return () => window.removeEventListener("resize", measure);
+  }, [filter]);
+
+  // Turn the slide animation on only after the first layout (no jump on load)
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setAnimatePill(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const visible =
+    filter === "All"
+      ? PROJECTS
+      : PROJECTS.filter((project) => project.category === filter);
+
   return (
     <section id="projects" className="border-t py-24 lg:py-32">
       <div className="container-px">
@@ -96,70 +56,68 @@ const Projects = () => {
               className="font-display text-3xl font-semibold sm:text-4xl"
               style={{ color: "var(--text)" }}
             >
-              Featured Projects
+              Projects
             </h2>
 
             <p
               className="mt-4 text-[15px] leading-relaxed"
               style={{ color: "var(--text-muted)" }}
             >
-              Carefully crafted projects focused on clean UI, responsive
-              layouts, and polished user experiences.
+              Selected work, from full-stack apps to polished frontends. Open
+              any project to see its stack, the challenges and what I would
+              improve next.
             </p>
           </div>
         </Reveal>
 
-        {/* Project Grid */}
-        <div className="mt-14 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-          {projects.map((project, index) => (
-            <Reveal key={project.title} delay={`${index * 0.08}s`}>
-              <div className="group flex h-full flex-col rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.04)] p-6 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-                <BrowserPreview project={project} />
+        {/* Filter */}
+        <Reveal delay="0.1s">
+          <div
+            role="group"
+            aria-label="Filter projects"
+            className="relative mt-10 inline-flex rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1"
+          >
+            <span
+              aria-hidden="true"
+              className={`absolute bottom-1 left-0 top-1 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] ${
+                animatePill
+                  ? "transition-[transform,width] duration-300 ease-out"
+                  : ""
+              }`}
+              style={{
+                width: pill.width,
+                transform: `translateX(${pill.left}px)`,
+              }}
+            />
 
-                {/* Content */}
-                <div className="mt-6 flex flex-1 flex-col">
-                  <h3
-                    className="font-display text-xl font-semibold"
-                    style={{ color: "var(--text)" }}
-                  >
-                    {project.title}
-                  </h3>
+            {FILTERS.map((item) => (
+              <button
+                key={item}
+                ref={(el) => {
+                  tabRefs.current[item] = el;
+                }}
+                type="button"
+                onClick={() => setFilter(item)}
+                aria-pressed={filter === item}
+                className="relative z-10 flex cursor-pointer items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors duration-200"
+                style={{
+                  color: filter === item ? "var(--text)" : "var(--text-muted)",
+                }}
+              >
+                {item}
+                <span className="mono rounded-md border border-[var(--border)] px-1.5 text-[11px] leading-5">
+                  {countFor(item)}
+                </span>
+              </button>
+            ))}
+          </div>
+        </Reveal>
 
-                  <p
-                    className="mt-3 text-[15px] leading-relaxed"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    {project.description}
-                  </p>
-
-                  {/* Tags */}
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Footer */}
-                  <div className="mt-auto flex items-center justify-between pt-6">
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-sm font-medium"
-                      style={{ color: "var(--accent)" }}
-                    >
-                      Live Demo
-                      <ArrowUpRight className="h-4 w-4" />
-                    </a>
-                  </div>
-                </div>
-              </div>
+        {/* List (re-mounts on filter change so the rows rise again) */}
+        <div key={filter} className="mt-10 divide-y border-y">
+          {visible.map((project, index) => (
+            <Reveal key={project.slug} delay={`${index * 0.06}s`}>
+              <ProjectRow project={project} index={index} />
             </Reveal>
           ))}
         </div>

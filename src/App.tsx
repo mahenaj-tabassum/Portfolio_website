@@ -1,20 +1,13 @@
+import { Route, Routes } from "react-router";
+import { ToastContainer } from "react-toastify";
 import BackgroundEffects from "./components/stylesComponent/BackgroundEffects";
 import CustomCursor from "./components/stylesComponent/CustomCurson";
-import Navbar from "./components/Navbar";
 import ProgressBar from "./components/stylesComponent/ProgressBar";
-import Hero from "./components/Hero";
-import ScrollReveal from "./components/stylesComponent/ScrollReveal";
-import About from "./components/About";
-import Skills from "./components/Skills";
-import Projects from "./components/Projects";
-import Services from "./components/Services";
-import Process from "./components/Process";
-import LearningJourney from "./components/Journey";
-import BuildingInPublic from "./components/Building";
-import FAQ from "./components/FAQ";
-import Contact from "./components/Contact";
+import ScrollManager from "./components/stylesComponent/ScrollManager";
+import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import { ToastContainer } from "react-toastify";
+import Home from "./pages/Home";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -23,7 +16,7 @@ function App() {
       <BackgroundEffects />
       <ProgressBar />
       <CustomCursor />
-      <ScrollReveal />
+      <ScrollManager />
 
       <a
         href="#main"
@@ -35,16 +28,12 @@ function App() {
       <Navbar />
 
       <main className="relative z-10" id="main">
-        <Hero />
-        <About />
-        <Skills />
-        <Projects />
-        <Services />
-        <Process />
-        <LearningJourney />
-        <BuildingInPublic />
-        <FAQ />
-        <Contact />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {/* Step 4: <Route path="/projects/:slug" element={<ProjectDetail />} /> */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+
         <Footer />
       </main>
     </>
