@@ -27,6 +27,63 @@ export type Project = {
 
 export const PROJECTS: Project[] = [
   {
+    slug: "pizzahub",
+    title: "PizzaHub",
+    type: "Pizza ordering and delivery platform",
+    category: "Full Stack",
+    summary:
+      "A role-based platform where customers order from local pizza shops, vendors manage menus and orders, and admins moderate the whole system.",
+    description:
+      "PizzaHub is a role-based pizza ordering platform with three kinds of users. Customers discover local pizza shops, browse the menu with debounced search, category and location filters, price sorting and pagination, and place orders with a delivery date and address. Vendors publish menu items, accept or reject pending orders and upgrade to a Premium plan through Stripe, while admins manage users, approve or reject menu items and review subscription transactions. Every dashboard has its own stats and charts, and sign-in works with email and password or Google through Better Auth, with the Express API protected by JWT verification and role checks.",
+    techStack: [
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "shadcn/ui",
+      "Better Auth",
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "JWT",
+      "Stripe",
+    ],
+    liveUrl: "https://pizzahub-client-web.vercel.app",
+    githubUrl: "https://github.com/mahenaj-tabassum/PizzaHub-Client",
+    challenges: [
+      {
+        title: "Role-based access on both sides",
+        detail:
+          "Customers, vendors and admins each see different dashboards. The client checks the role on the server, and the Express API verifies the JWT against the Better Auth JWKS endpoint, rejects blocked users and enforces the role before any change.",
+      },
+      {
+        title: "Shareable search and filters",
+        detail:
+          "The menu keeps its search, category, location, sort and page in the URL, so results survive a reload and can be shared. The server validates the params and runs a MongoDB aggregation.",
+      },
+      {
+        title: "Business rules that must hold",
+        detail:
+          "Duplicate active orders for the same item and date are blocked, pending orders can be accepted or rejected only once, and the Free plan is limited to 3 active items while Premium is unlimited.",
+      },
+    ],
+    improvements: [
+      {
+        title: "Online payment for orders",
+        detail:
+          "Stripe currently handles vendor subscriptions only. I would let customers pay for their orders online as well.",
+      },
+      {
+        title: "Live order tracking",
+        detail:
+          "Update the order status timeline in real time instead of on refresh.",
+      },
+      {
+        title: "Ratings and reviews",
+        detail: "Let customers rate vendors and items after a delivered order.",
+      },
+    ],
+  },
+  {
     slug: "handstogether",
     title: "HandsTogether",
     type: "Social development events platform",
