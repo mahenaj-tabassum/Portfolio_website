@@ -150,9 +150,9 @@ const CODE_LINES: ReactNode[] = [
     {"  "}stack: [<Str>"Next.js"</Str>, <Str>"Node.js"</Str>,{" "}
     <Str>"MongoDB"</Str>],
   </>,
-  <>
-    {"  "}projects: <Num>3</Num>,
-  </>,
+ <>
+   {"  "}focus: <Str>"MERN Stack"</Str>,
+ </>,
   <>
     {"  "}openToWork: <Num>true</Num>,
   </>,
